@@ -2,27 +2,336 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>X-Klon O'yini</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Xparibet - Apple of Fortune</title>
     <style>
-        body { background: #1a1a1a; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
-        .grid { display: grid; grid-template-columns: repeat(5, 50px); gap: 10px; margin-top: 50px; }
-        .cell { width: 50px; height: 50px; background: #333; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        :root {
+            --bg-color: #0d1117;
+            --main-green: #2ecc71;
+            --main-dark-green: #27ae60;
+            --main-yellow: #f1c40f;
+            --text-color: #fff;
+            --ladder-bg: rgba(255, 255, 255, 0.05);
+            --modal-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        body {
+            margin: 0; padding: 0; background: var(--bg-color);
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; color: var(--text-color); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* TELEFON EKRANI KONTEYNERI */
+        .app-container {
+            width: 375px; max-width: 100%; height: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            display: flex; flex-direction: column; padding-bottom: 20px; margin-top: 10px;
+        }
+
+        /* TOP BAR (BALANS) */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .balance-info { display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .plus-icon { color: var(--main-green); font-size: 1.2rem; cursor: pointer; }
+        .menu-icons { display: flex; gap: 10px; font-size: 1.2rem; cursor: pointer; color: rgba(255, 255, 255, 0.7); }
+
+        /* O'YIN NOMI TEPASIDA */
+        .game-header { text-align: center; padding: 8px 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255, 255, 255, 0.7); }
+
+        /* O'YIN MAYDONI VA NARVON */
+        .game-layout { display: flex; flex: 1; padding: 0 10px; }
+
+        /* Chap tarfdagi koeffitsiyentlar */
+        .ladder { width: 70px; display: flex; flex-direction: column-reverse; justify-content: flex-start; margin-right: 10px; gap: 5px; }
+        .ladder-row {
+            height: 40px; background: var(--ladder-bg); display: flex; justify-content: center; align-items: center;
+            border-radius: 4px; font-weight: bold; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;
+        }
+        .ladder-row.active { background: rgba(46, 204, 113, 0.2); color: var(--main-green); }
+
+        /* 5x10 Maydon */
+        .grid { flex: 1; display: grid; grid-template-rows: repeat(10, 1fr); gap: 5px; }
+        .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .cell {
+            height: 40px; background: #333; border-radius: 4px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            transition: all 0.2s ease;
+            /* SKRINSHOTDAGI YOG'OCH KATAK UCHUN: 
+               url('HAQIYQIY_KATAK_RASMI.png') */
+        }
+        .cell.good-apple {
+            background: #2e7d32;
+            /* SKRINSHOTDAGI QIZIL OLMA UCHUN:
+               url('HAQIYQIY_QIZIL_OLMA.png') */
+        }
+        .cell.bad-apple {
+            background: #b71c1c;
+            /* SKRINSHOTDAGI CHIRIK OLMA UCHUN:
+               url('HAQIYQIY_CHIRIK_OLMA.png') */
+        }
+
+        /* PASTKI PANEL (PUL TIKISH) */
+        .betting-panel { padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 10px; }
+        .bet-input-row { display: flex; gap: 10px; }
+        #bet-amount { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: var(--text-color); font-size: 1rem; }
+        .play-btn { width: 100%; padding: 15px; background: var(--main-green); border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; }
+        .play-btn:hover { background: var(--main-dark-green); }
+        .bet-options { display: flex; justify-content: space-between; gap: 5px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); cursor: pointer; }
+        .setting-icons { display: flex; justify-content: space-around; padding-top: 10px; font-size: 1.3rem; color: rgba(255, 255, 255, 0.7); cursor: pointer; }
+
+        /* G'ALABA MODAL OYNASI */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg); display: none;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            width: 320px; background: var(--bg-color); border: 1px solid var(--main-green); border-radius: 12px;
+            padding: 30px; text-align: center;
+        }
+        .win-title { font-size: 2rem; color: var(--main-green); margin-bottom: 10px; font-weight: bold; text-transform: uppercase; }
+        .win-amount { font-size: 1.5rem; color: var(--text-color); margin-bottom: 25px; }
+        .modal-btn { width: 100%; padding: 15px; background: var(--main-green); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem; }
+        .cancel-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-color); }
+        .modal-btn.cashout { background: var(--main-yellow); color: #000; }
+
+        /* ANIMATSIYALAR */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fadeIn { animation: fadeIn 0.5s ease; }
     </style>
 </head>
 <body>
-    <div class="grid" id="game-grid"></div>
+    <div class="app-container">
+        <div class="top-bar">
+            <div class="menu-icons">🔙</div>
+            <div class="balance-info">
+                <span id="display-balance">64 259 793.21 s'om</span>
+                <span class="plus-icon">➕</span>
+            </div>
+            <div class="menu-icons">⚙️</div>
+        </div>
+
+        <div class="game-header">Apple of Fortune</div>
+
+        <div class="game-layout">
+            <div class="ladder" id="ladder">
+                <div class="ladder-row">x349.68</div>
+                <div class="ladder-row">x249.71</div>
+                <div class="ladder-row">x149.81</div>
+                <div class="ladder-row">x69.93</div>
+                <div class="ladder-row">x27.97</div>
+                <div class="ladder-row">x11.18</div>
+                <div class="ladder-row">x6.71</div>
+                <div class="ladder-row">x4.02</div>
+                <div class="ladder-row">x2.41</div>
+                <div class="ladder-row">x1.93</div>
+            </div>
+            <div class="grid" id="game-grid">
+                </div>
+        </div>
+
+        <div class="betting-panel">
+            <div class="bet-input-row">
+                <input type="number" id="bet-amount" value="3000" min="100">
+                <button class="play-btn" id="play-btn">O'ynamoq</button>
+            </div>
+            <div class="bet-options">
+                <span onclick="setBet('min')">MIN</span>
+                <span onclick="setBet('x2')">X2</span>
+                <span onclick="setBet('x/2')">X/2</span>
+                <span onclick="setBet('max')">MAX</span>
+            </div>
+            <div class="setting-icons">
+                <span>🔧</span>
+                <span>⚡</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fadeIn" id="win-modal">
+        <div class="modal-content">
+            <div class="win-title">Pobeda!</div>
+            <p>Hozirdagi yutuq:</p>
+            <div class="win-amount" id="win-amount-modal">0 s'om</div>
+            <button class="modal-btn cashout" id="cashout-btn">Yutuqni olish</button>
+            <button class="modal-btn" onclick="startAgain()">Yana o'ynash</button>
+            <button class="modal-btn cancel-btn" onclick="closeModal()">O'zgartirish</button>
+        </div>
+    </div>
+
     <script>
+        // SOXTA MOLIYAVIY MA'LUMOTLAR
+        let currentBalance = 64259793.21;
+        let currentBet = 3000;
+        let currentMultiplierIndex = -1; // -1: o'yin boshlanmadi
+        let currentWin = 0;
+        let gameStarted = false;
+
+        const multipliers = [1.93, 2.41, 4.02, 6.71, 11.18, 27.97, 69.93, 149.81, 249.71, 349.68];
+        
+        // ELEMENTLARNI QO'LGA OLISH
+        const displayBalance = document.getElementById('display-balance');
+        const betAmountInput = document.getElementById('bet-amount');
+        const playBtn = document.getElementById('play-btn');
         const grid = document.getElementById('game-grid');
-        for (let i = 0; i < 50; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.onclick = function() {
-                // 100% YUTUQ MANTIG'I
-                this.innerHTML = '🍎'; // Har doim olma chiqadi
-                this.style.background = '#2e7d32'; 
-            };
-            grid.appendChild(cell);
+        const ladder = document.getElementById('ladder');
+        const winModal = document.getElementById('win-modal');
+        const winAmountModal = document.getElementById('win-amount-modal');
+        const cashoutBtn = document.getElementById('cashout-btn');
+
+        // FUNKTSILAR: UI YANGILASH
+        function updateBalanceDisplay() {
+            displayBalance.innerText = currentBalance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " s'om";
         }
+
+        function formatMoney(amount) {
+            return amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " s'om";
+        }
+
+        function updateLadder() {
+            const rows = ladder.querySelectorAll('.ladder-row');
+            rows.forEach(row => row.classList.remove('active'));
+            if (currentMultiplierIndex >= 0) {
+                // ladder is in reversed order, so we need some math:
+                const indexToActivate = (rows.length - 1) - currentMultiplierIndex;
+                rows[indexToActivate].classList.add('active');
+            }
+        }
+
+        // FUNKTSILAR: O'YIN MAYDONI YARATISH
+        function createGrid() {
+            grid.innerHTML = '';
+            for (let i = 9; i >= 0; i--) { // 10 rows (10 down to 0)
+                let row = document.createElement('div');
+                row.className = 'grid-row';
+                row.id = `row-${i}`;
+
+                for (let j = 0; j < 5; j++) { // 5 cells per row
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.onclick = () => clickCell(cell);
+                    // Hozir emoji ishlatamiz, yog'och katak rasmini CSS'ga qo'shasiz.
+                    // cell.innerHTML = '🪵'; 
+                    row.appendChild(cell);
+                }
+                grid.appendChild(row);
+            }
+        }
+
+        // FUNKTSILAR: O'YIN MANTIG'I
+        function setBet(option) {
+            currentBet = parseInt(betAmountInput.value);
+            if (option === 'min') currentBet = 100;
+            if (option === 'max') currentBet = 10000000; // Soxta max
+            if (option === 'x2') currentBet *= 2;
+            if (option === 'x/2') currentBet /= 2;
+            betAmountInput.value = currentBet;
+        }
+
+        playBtn.onclick = function() {
+            if (gameStarted) return;
+            currentBet = parseInt(betAmountInput.value);
+            
+            if (currentBalance < currentBet) {
+                alert("Balans yetarli emas!");
+                return;
+            }
+
+            // O'YIN BOSHLANISHI
+            currentBalance -= currentBet;
+            updateBalanceDisplay();
+            gameStarted = true;
+            currentMultiplierIndex = 0;
+            currentWin = 0;
+            playBtn.innerText = "Yutuqni olish";
+            playBtn.classList.remove('play-btn');
+            playBtn.classList.add('play-btn', 'cancel-btn'); // color changes
+
+            createGrid();
+            updateLadder();
+        }
+
+        function clickCell(clickedCell) {
+            if (!gameStarted) return;
+            const row = parseInt(clickedCell.dataset.row);
+            const col = parseInt(clickedCell.dataset.col);
+
+            // Faqat faol qatordagi katakni bosish mumkin (currentMultiplierIndex)
+            if (row !== currentMultiplierIndex) return;
+
+            // --- MAJBURIY YUTUQ MANTIG'I (Siz so'ragan) ---
+            // 1. Bosilgan katak majburan "butun olma" bo'ladi.
+            clickedCell.classList.add('good-apple');
+            clickedCell.innerHTML = '🍎';
+
+            // --- ILLUZIYA: CHIRIK OLMA MANIPULYATSIYASI ---
+            // 2. Qolgan 4 ta katakdan 1 tasiga (siz bosmagan) chirik olma qo'yamiz.
+            let badCellCol;
+            do {
+                badCellCol = Math.floor(Math.random() * 5);
+            } while (badCellCol === col); // bosilgan col emasligini tekshiramiz
+
+            const activeRow = document.getElementById(`row-${row}`);
+            const badCell = activeRow.querySelector(`[data-col="${badCellCol}"]`);
+            badCell.classList.add('bad-apple');
+            badCell.innerHTML = '🐛'; // chirik olma emojisi
+
+            // 3. Yutuqni hisoblash
+            currentWin = currentBet * multipliers[currentMultiplierIndex];
+            updateBalanceDisplay(); // Hozirda yutuqni balansga emas, modalga ko'rsatamiz
+
+            // 4. Keyingi qatorga o'tish yoki yutish
+            if (currentMultiplierIndex === 9) { // Oxirgi qator yutildi
+                finishGame('win');
+            } else {
+                currentMultiplierIndex++;
+                updateLadder();
+            }
+        }
+
+        function finishGame(type) {
+            gameStarted = false;
+            playBtn.innerText = "O'ynamoq";
+            playBtn.className = 'play-btn';
+
+            if (type === 'win') {
+                showWinModal();
+            }
+        }
+
+        function showWinModal() {
+            winModal.style.display = 'flex';
+            winAmountModal.innerText = formatMoney(currentWin);
+        }
+
+        function closeModal() {
+            winModal.style.display = 'none';
+        }
+
+        // CASHOUT (YUTUQNI OLISH)
+        cashoutBtn.onclick = function() {
+            currentBalance += currentWin;
+            updateBalanceDisplay();
+            closeModal();
+            createGrid(); // maydonni tozalash
+            currentMultiplierIndex = -1;
+            updateLadder();
+        }
+
+        // YANA O'YIN BOSHLASH
+        function startAgain() {
+            closeModal();
+            playBtn.click(); // avtomatik pul tikish va boshlash
+        }
+
+        // INICIALIZATSIYA
+        updateBalanceDisplay();
+        createGrid();
     </script>
 </body>
 </html>
