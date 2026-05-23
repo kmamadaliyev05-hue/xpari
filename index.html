@@ -2,483 +2,616 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Apple of Fortune - Original Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple of Fortune</title>
     <style>
-        /* ASOSIY SOZLAMALAR */
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            /* Chuqur o'rmon (jungle) stili - originalga o'xshash qorong'u yashil va qora fon */
-            background-color: #020a05;
-            background-image: 
-                radial-gradient(circle at 50% 30%, rgba(20, 70, 30, 0.6) 0%, rgba(2, 10, 5, 1) 70%),
-                linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-            color: white;
-            display: flex; justify-content: center;
-            min-height: 100vh; overflow: hidden;
+            background: radial-gradient(circle at center, #1a4221 0%, #0a1c0e 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        #app-container {
-            width: 100%; max-width: 400px; height: 100vh;
-            display: flex; flex-direction: column;
+        /* Asosiy Mobil Ekran */
+        .game-container {
+            width: 100%;
+            max-width: 430px;
+            height: 92vh;
+            background: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
             position: relative;
-            background: rgba(0, 0, 0, 0.3); /* Yengil soya */
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #2e5334;
+            overflow: hidden;
         }
 
-        /* YUQORI QISM (Balans va Menyu) */
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; z-index: 10;
-        }
-        .icon-btn { font-size: 1.2rem; cursor: pointer; color: rgba(255,255,255,0.8); }
-        .balance-badge {
-            background: rgba(0, 0, 0, 0.5); border-radius: 20px;
-            padding: 5px 15px 5px 20px; display: flex; align-items: center; gap: 12px;
-            font-weight: 700; font-size: 1rem; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .plus-btn {
-            background: linear-gradient(180deg, #38e860 0%, #1ba339 100%); color: #000; 
-            border-radius: 50%; width: 24px; height: 24px; 
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 1rem; box-shadow: 0 0 8px rgba(56, 232, 96, 0.5);
-        }
-        .title { text-align: center; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; color: #a5d6a7; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        /* O'YIN MAYDONI */
-        .game-area {
-            flex: 1; display: flex; padding: 0 15px; gap: 10px;
-            align-items: flex-end; margin-bottom: 25px; justify-content: center;
+        .game-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,28,14,0.4) 0%, rgba(10,28,14,0.85) 100%);
+            z-index: 1;
         }
 
-        /* KOEFFITSIYENTLAR (Chap tomon) */
-        .multipliers {
-            display: flex; flex-direction: column; gap: 4px; width: 60px;
-            margin-bottom: 7px;
+        /* Yuqori qism */
+        .header {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .mult-item {
-            height: 40px; display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.4); border-radius: 6px;
-            font-size: 0.8rem; font-weight: 800; color: rgba(255,255,255,0.3);
-            transition: all 0.3s ease; border: 1px solid transparent;
-        }
-        .mult-item.active { 
-            background: linear-gradient(90deg, rgba(27,163,57,0.8) 0%, rgba(56,232,96,0.2) 100%);
-            color: #fff; border-left: 3px solid #38e860; box-shadow: -2px 0 10px rgba(56,232,96,0.3);
-        }
-        .mult-item.passed { color: #38e860; text-shadow: 0 0 5px rgba(56,232,96,0.5); }
 
-        /* O'YIN GRID VA KATAKLAR */
-        .grid { flex: 1; display: flex; flex-direction: column; gap: 4px; max-width: 250px; }
-        .grid-row { display: flex; justify-content: space-between; height: 40px; position: relative; }
-        
-        /* 3D KATAK (Flip animatsiyasi bilan) */
+        .header h1 {
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: #e2b34c;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Skroll bo'ladigan O'yin maydoni */
+        .board-viewport {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            z-index: 2;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column-reverse; /* Qatorlar pastdan tepaga joylashadi */
+            scroll-behavior: smooth;
+        }
+
+        /* Skrollbarni yashirish */
+        .board-viewport::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        /* Qator dizayni */
+        .row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: all 0.4s ease;
+            padding: 4px;
+            border-radius: 40px;
+        }
+
+        .row.active {
+            opacity: 1;
+            pointer-events: auto;
+            background: rgba(226, 179, 76, 0.15);
+            box-shadow: inset 0 0 15px rgba(226, 179, 76, 0.3);
+        }
+
+        .row.passed {
+            opacity: 0.85;
+        }
+
+        /* Koeffitsiyent paneli */
+        .multiplier {
+            width: 65px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #a4cbb7;
+            text-align: left;
+            padding-left: 5px;
+            text-shadow: 1px 1px 3px #000;
+            transition: color 0.3s;
+        }
+
+        .row.active .multiplier {
+            color: #e2b34c;
+            font-size: 14px;
+            scale: 1.05;
+        }
+
+        /* Kataklar guruhi */
+        .cells-container {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        /* 3D Karta effekti */
         .cell {
-            width: 40px; height: 40px; position: relative; perspective: 1000px;
+            flex: 1;
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .cell-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .cell.flipped .cell-inner {
+            transform: rotateY(180deg);
+        }
+
+        .cell-front, .cell-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Yopiq qopqoq (Yog'och dizayn) */
+        .cell-front {
+            background: radial-gradient(circle, #8a5229 20%, #573116 100%);
+            border: 2px solid #b07346;
+        }
+
+        .row.active .cell-front:hover {
+            transform: scale(1.05);
+            border-color: #e2b34c;
+        }
+
+        /* Yog'och ichidagi naqsh simulyatsiyasi */
+        .cell-front::after {
+            content: '';
+            width: 75%;
+            height: 75%;
+            border: 2px dashed rgba(0,0,0,0.25);
+            border-radius: 50%;
+        }
+
+        /* Ochilgan holat orqa tomoni */
+        .cell-back {
+            transform: rotateY(180deg);
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* Spinner (Yuklanish animatsiyasi) */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #e2b34c;
+            animation: spin 0.8s linear infinite;
+            position: absolute;
+            z-index: 5;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* SVG Elementlar o'lchami */
+        .cell svg {
+            width: 70%;
+            height: 70%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        /* Pastki boshqaruv paneli */
+        .control-panel {
+            position: relative;
+            z-index: 2;
+            background: rgba(10, 28, 14, 0.95);
+            padding: 15px;
+            border-top: 2px solid #2e5334;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #a4cbb7;
+        }
+
+        .current-win {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e2b34c;
+        }
+
+        .action-btn {
+            background: linear-gradient(to bottom, #2ea34a, #1b6b2e);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(27, 107, 46, 0.4);
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .action-btn.take-cash {
+            background: linear-gradient(to bottom, #e2b34c, #b3851b);
+            box-shadow: 0 4px 15px rgba(226, 179, 76, 0.4);
+            color: #102615;
+        }
+
+        /* Modallar (Yutuq / Mag'lubiyat) */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
             transition: opacity 0.4s ease;
         }
-        .cell-inner {
-            width: 100%; height: 100%; position: absolute;
-            transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-        }
-        .cell.flipped .cell-inner { transform: rotateY(180deg); }
-        
-        .cell-front, .cell-back {
-            width: 100%; height: 100%; position: absolute;
-            backface-visibility: hidden; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        /* KATAKNING OLD TOMONI (Yopiq yog'och qopqoq) */
-        .cell-front {
-            background: radial-gradient(circle at 30% 30%, #684123 0%, #3a1e0b 80%, #1a0c04 100%);
-            border: 2px solid #291406; box-shadow: inset 0 -3px 5px rgba(0,0,0,0.8), 0 4px 6px rgba(0,0,0,0.5);
-        }
-        /* Yog'och teksturasini chizish uchun pseudo-element */
-        .cell-front::before {
-            content: ''; position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
-            border-radius: 50%; border: 1px dashed rgba(255,255,255,0.1);
-        }
-
-        /* AKTIV QATOR KO'RSATKICHI (Miltillovchi sariq chiroq) */
-        .cell.active-basket .cell-front { cursor: pointer; border-color: #8c5a2b; }
-        .cell.active-basket::after {
-            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-            width: 20px; height: 6px; background: radial-gradient(ellipse, #ffb300 0%, rgba(255,179,0,0) 70%);
-            border-radius: 50%; animation: pulse-glow 1s infinite alternate; z-index: -1;
-        }
-        @keyframes pulse-glow {
-            0% { opacity: 0.5; transform: translateX(-50%) scale(0.8); }
-            100% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+        .modal {
+            background: linear-gradient(135deg, #1e4225 0%, #0d2111 100%);
+            border: 3px solid #e2b34c;
+            border-radius: 20px;
+            padding: 30px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* KATAKNING ORQA TOMONI (Olingan natija) */
-        .cell-back { transform: rotateY(180deg); font-size: 20px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
-        
-        /* Yaxshi olma foni */
-        .cell-back.good {
-            background: radial-gradient(circle at 50% 50%, #2ecc71 0%, #0c3818 100%);
-            border: 2px solid #145c26;
-        }
-        /* Yomon olma (chirik) foni */
-        .cell-back.bad {
-            background: radial-gradient(circle at 50% 50%, #e74c3c 0%, #4a0904 100%);
-            border: 2px solid #75140b;
+        .overlay.show .modal {
+            transform: scale(1);
         }
 
-        /* LOADING SPINNER */
-        .spinner {
-            width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: #ffb300; border-radius: 50%;
-            animation: spin 0.8s linear infinite; position: absolute; z-index: 5;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* PASTKI PANEL (Pul tikish va Yechib olish) */
-        .bottom-area {
-            background: linear-gradient(180deg, #16241a 0%, #0a110c 100%);
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
-            padding: 20px 20px 30px 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.7); z-index: 10;
+        .modal h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: #e2b34c;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Pul tikish holati */
-        #betting-panel { display: block; }
-        .bet-options { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .bet-options span { 
-            background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;
-            font-size: 0.75rem; font-weight: 700; color: #a5d6a7; cursor: pointer; transition: 0.2s;
+        .modal p {
+            font-size: 15px;
+            color: #a4cbb7;
+            margin-bottom: 20px;
         }
-        .bet-options span:active { background: rgba(255,255,255,0.2); transform: scale(0.95); }
-        
-        .bet-input-container { display: flex; background: #000; border-radius: 12px; border: 1px solid #2a3d30; overflow: hidden; height: 50px; }
-        .bet-input-container input {
-            flex: 1; background: transparent; border: none; color: white;
-            font-size: 1.2rem; padding: 0 15px; outline: none; font-weight: bold; text-align: left;
-        }
-        .main-btn {
-            background: linear-gradient(180deg, #38e860 0%, #1ba339 100%); color: #000; 
-            border: none; padding: 0 30px; font-weight: 900; font-size: 1rem; 
-            cursor: pointer; text-transform: uppercase; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3);
-            transition: 0.2s;
-        }
-        .main-btn:active { transform: scale(0.98); }
-        
-        /* O'yin jarayoni holati (Yutuqni olish) */
-        #playing-panel { display: none; text-align: center; }
-        .current-win-text { font-size: 0.8rem; font-weight: 700; color: #a5d6a7; margin-bottom: 5px; text-transform: uppercase; }
-        .current-win-amount { font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(56,232,96,0.4); }
-        .cashout-btn {
-            width: 100%; background: linear-gradient(180deg, #ffca28 0%, #ff8f00 100%);
-            color: #000; border: none; border-radius: 12px; height: 50px;
-            font-weight: 900; font-size: 1.1rem; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(255, 143, 0, 0.4), inset 0 2px 0 rgba(255,255,255,0.4);
-            transition: 0.2s;
-        }
-        .cashout-btn:active { transform: scale(0.98); }
 
-        /* MODAL OYNA (G'ALABA / MAG'LUBIYAT) - Blur effekt bilan */
-        #modal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
+        .modal .win-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 25px;
         }
-        .modal-content {
-            background: radial-gradient(circle, #1a3320 0%, #0a140d 100%); border: 1px solid #38e860;
-            border-radius: 20px; padding: 40px 20px; width: 85%; text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        .restart-btn {
+            background: #e2b34c;
+            color: #0d2111;
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
         }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        
-        .modal-title { font-size: 2.2rem; font-weight: 900; color: #38e860; margin-bottom: 10px; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 232, 96, 0.5); }
-        .modal-subtitle { font-size: 1rem; color: #a5d6a7; margin-bottom: 25px; }
-        .modal-amount { font-size: 2.5rem; color: #fff; font-weight: bold; margin-bottom: 30px; display: block; }
-        .modal-restart-btn {
-            background: linear-gradient(180deg, #38e860 0%, #1ba339 100%); color: #000; border: none; border-radius: 12px;
-            padding: 15px 30px; font-weight: 900; font-size: 1rem; cursor: pointer; text-transform: uppercase; width: 100%;
-            box-shadow: inset 0 2px 0 rgba(255,255,255,0.3);
+
+        /* SVG Ikonkalari Shabloni */
+        .hidden-assets {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div class="top-bar">
-        <div class="icon-btn">❮</div>
-        <div>
-            <div class="balance-badge">
-                <span id="balance-display">64 259 793 сўм</span>
-                <div class="plus-btn">+</div>
+    <svg class="hidden-assets">
+        <g id="good-apple">
+            <circle cx="50" cy="55" r="32" fill="url(#apple-grad)" />
+            <path d="M 50 25 C 45 15, 30 20, 35 30 Z" fill="#4ca64c" />
+            <path d="M 50 25 Q 52 15 58 12" stroke="#5c3a21" stroke-width="4" fill="none" stroke-linecap="round" />
+            <ellipse cx="38" cy="42" rx="5" ry="10" fill="rgba(255,255,255,0.4)" transform="rotate(-15 38 42)" />
+            <defs>
+                <radialGradient id="apple-grad" cx="35%" cy="35%" r="70%">
+                    <stop offset="0%" stop-color="#ff4d4d"/>
+                    <stop offset="70%" stop-color="#cc0000"/>
+                    <stop offset="100%" stop-color="#660000"/>
+                </radialGradient>
+            </defs>
+        </g>
+        
+        <g id="bad-apple">
+            <path d="M 28 32 C 35 22, 65 22, 72 32 C 65 42, 35 42, 28 32 Z" fill="#8a1a1a" />
+            <path d="M 28 78 C 35 68, 65 68, 72 78 C 65 88, 35 88, 28 78 Z" fill="#8a1a1a" />
+            <rect x="47" y="30" width="6" height="50" fill="#d9c29e" rx="2" />
+            <path d="M 28 32 C 38 35, 38 75, 28 78 C 42 70, 42 40, 28 32 Z" fill="#f5edd5" />
+            <path d="M 72 32 C 62 35, 62 75, 72 78 C 58 70, 58 40, 72 32 Z" fill="#f5edd5" />
+            <ellipse cx="44" cy="52" rx="2" ry="4" fill="#331a00" />
+            <ellipse cx="56" cy="58" rx="2" ry="4" fill="#331a00" />
+            <path d="M 50 24 Q 53 14 60 10" stroke="#4a2e1b" stroke-width="3" fill="none" />
+        </g>
+    </svg>
+
+    <div class="game-container">
+        <div class="header">
+            <h1>APPLE OF FORTUNE</h1>
+        </div>
+
+        <div class="board-viewport" id="boardViewport">
+            </div>
+
+        <div class="control-panel">
+            <div class="stats-row">
+                <span>Garov miqdori: <strong style="color: #fff;">300 000 SŪM</strong></span>
+                <div>Hozirgi yutuq: <span class="current-win" id="currentWinTxt">0 SŪM</span></div>
+            </div>
+            <button class="action-btn" id="mainActionBtn">O'YINNI BOSHLASH</button>
+        </div>
+
+        <div class="overlay" id="resultOverlay">
+            <div class="modal">
+                <h2 id="modalTitle">Omadsizlik</h2>
+                <p id="modalDesc">Yana bir bor urinib ko'ring</p>
+                <div class="win-amount" id="modalWinAmount">0 SŪM</div>
+                <button class="restart-btn" id="modalBtn">QAYTA O'YNASH</button>
             </div>
         </div>
-        <div class="icon-btn">⚙</div>
-    </div>
-    
-    <div class="title">APPLE OF FORTUNE</div>
-
-    <div class="game-area">
-        <div class="multipliers" id="multipliers"></div>
-        <div class="grid" id="grid"></div>
     </div>
 
-    <div class="bottom-area">
-        <div id="betting-panel">
-            <div class="bet-options">
-                <span onclick="changeBet('min')">MIN</span>
-                <span onclick="changeBet('x2')">X2</span>
-                <span onclick="changeBet('x/2')">X/2</span>
-                <span onclick="changeBet('max')">MAX</span>
-            </div>
-            <div class="bet-input-container">
-                <input type="number" id="bet-input" value="3000">
-                <button class="main-btn" onclick="startGame()">TIKISH</button>
-            </div>
-        </div>
+    <script>
+        // O'yin sozlamalari va koeffitsiyentlari (Pastdan tepaga)
+        const CONFIG = [
+            { mult: 1.23, badApples: 1 },
+            { fill: 1.54, badApples: 1 },
+            { mult: 1.93, badApples: 1 },
+            { mult: 2.41, badApples: 1 },
+            { mult: 4.02, badApples: 2 },
+            { mult: 6.71, badApples: 2 },
+            { mult: 11.18, badApples: 2 },
+            { mult: 27.97, badApples: 3 },
+            { mult: 69.93, badApples: 3 },
+            { mult: 349.68, badApples: 4 }
+        ];
 
-        <div id="playing-panel">
-            <div class="current-win-text">Hozirdagi yutuq</div>
-            <div class="current-win-amount"><span id="current-win-display">0</span> СЎМ</div>
-            <button class="cashout-btn" onclick="cashout()">YUTUQNI OLISH</button>
-        </div>
-    </div>
+        // To'g'ri koeffitsiyentlar ro'yxatini to'ldirish
+        CONFIG[1].mult = 1.54; 
 
-    <div id="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-title">G'ALABA!</div>
-            <div class="modal-subtitle">Sizning yutug'ingiz</div>
-            <span class="modal-amount" id="modal-win-display">0</span>
-            <button class="modal-restart-btn" id="modal-restart-btn" onclick="resetGameAndPlay()">YANGI O'YIN</button>
-        </div>
-    </div>
-</div>
+        const BET_AMOUNT = 300000;
+        let gameState = 'IDLE'; // IDLE, PLAYING, ENDED
+        let currentRowIndex = 0;
+        let boardData = [];
 
-<script>
-    // 1xBet Koeffitsiyentlari va Yomon olmalar soni (qatorlar bo'yicha pastdan tepaga)
-    const multipliers = [1.23, 1.54, 1.93, 2.41, 4.02, 6.71, 11.18, 27.97, 69.93, 349.68];
-    const badApplesCount = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
-    
-    let balance = 64259793.21;
-    let betAmount = 3000;
-    let currentRow = 0; // 0 = eng pastki qator (index 0)
-    let currentWin = 0;
-    let gameState = 'BETTING'; 
-    let isSpinning = false;
-    let userPath = []; 
+        const boardViewport = document.getElementById('boardViewport');
+        const mainActionBtn = document.getElementById('mainActionBtn');
+        const currentWinTxt = document.getElementById('currentWinTxt');
+        const resultOverlay = document.getElementById('resultOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalWinAmount = document.getElementById('modalWinAmount');
+        const modalBtn = document.getElementById('modalBtn');
 
-    const gridEl = document.getElementById('grid');
-    const multEl = document.getElementById('multipliers');
-    const balanceDisp = document.getElementById('balance-display');
-    const betInput = document.getElementById('bet-input');
-    const bettingPanel = document.getElementById('betting-panel');
-    const playingPanel = document.getElementById('playing-panel');
-    const curWinDisp = document.getElementById('current-win-display');
-    const modal = document.getElementById('modal-overlay');
-    const modalWinDisp = document.getElementById('modal-win-display');
+        // Doskani qurish
+        function initBoard() {
+            boardViewport.innerHTML = '';
+            boardData = [];
 
-    function formatMoney(amount) {
-        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    }
-    function updateBalance() {
-        balanceDisp.innerText = formatMoney(balance) + " сўм";
-    }
+            CONFIG.forEach((config, rIdx) => {
+                const rowEl = document.createElement('div');
+                rowEl.className = `row r-${rIdx}`;
+                rowEl.dataset.index = rIdx;
 
-    // MAYDONNI YARATISH (Boshlang'ich holat - tepadan pastga chiziladi)
-    function buildGrid() {
-        gridEl.innerHTML = '';
-        multEl.innerHTML = '';
-        userPath = [];
+                const multEl = document.createElement('div');
+                multEl.className = 'multiplier';
+                multEl.innerText = `x${config.mult.toFixed(2)}`;
+                rowEl.appendChild(multEl);
 
-        // 9 dan 0 gacha chizamiz (9 eng tepa, 0 eng past)
-        for (let r = 9; r >= 0; r--) {
-            // Koeffitsiyentlar
-            const m = document.createElement('div');
-            m.className = 'mult-item';
-            m.id = `mult-${r}`;
-            m.innerText = `x${multipliers[r]}`;
-            multEl.appendChild(m);
+                const cellsCont = document.createElement('div');
+                cellsCont.className = 'cells-container';
 
-            // Qator
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'grid-row';
-            rowDiv.id = `row-${r}`;
-            
-            for (let c = 0; c < 5; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.row = r;
-                cell.dataset.col = c;
-                
-                // 3D Inner structure
-                const inner = document.createElement('div');
-                inner.className = 'cell-inner';
-                
-                const front = document.createElement('div');
-                front.className = 'cell-front';
-                
-                const back = document.createElement('div');
-                back.className = 'cell-back'; // Rang keyin beriladi
-                
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cell.appendChild(inner);
-
-                cell.onclick = () => handleCellClick(r, c, cell, front, back);
-                rowDiv.appendChild(cell);
-            }
-            gridEl.appendChild(rowDiv);
-        }
-        updateBalance();
-    }
-
-    function changeBet(type) {
-        let val = parseInt(betInput.value) || 0;
-        if (type === 'min') val = 3000;
-        if (type === 'max') val = Math.floor(balance);
-        if (type === 'x2') val *= 2;
-        if (type === 'x/2') val = Math.max(3000, Math.floor(val / 2));
-        betInput.value = val;
-    }
-
-    // O'YINNI BOSHLASH
-    function startGame() {
-        betAmount = parseInt(betInput.value) || 3000;
-        if (balance < betAmount) { alert("Balans yetarli emas!"); return; }
-        
-        balance -= betAmount;
-        updateBalance();
-        
-        gameState = 'PLAYING';
-        currentRow = 0;
-        currentWin = 0;
-        
-        bettingPanel.style.display = 'none';
-        playingPanel.style.display = 'block';
-        curWinDisp.innerText = formatMoney(betAmount);
-
-        activateRow(currentRow);
-    }
-
-    // QATORNI FAOLLASHTIRISH
-    function activateRow(rowIdx) {
-        document.querySelectorAll('.mult-item').forEach(m => m.classList.remove('active'));
-        const activeMult = document.getElementById(`mult-${rowIdx}`);
-        activeMult.classList.add('active');
-        activeMult.classList.add('passed');
-
-        const cells = document.querySelectorAll(`.cell[data-row="${rowIdx}"]`);
-        cells.forEach(c => {
-            c.classList.add('active-basket');
-        });
-    }
-
-    // KATAK BOSILGANDA (100% YUTUQ VA FLIP ANIMATSIYA)
-    function handleCellClick(row, col, cellEl, frontEl, backEl) {
-        if (gameState !== 'PLAYING' || isSpinning || row !== currentRow) return;
-        
-        isSpinning = true;
-        
-        // 1. Loading Spinner qo'shish
-        const spinner = document.createElement('div');
-        spinner.className = 'spinner';
-        frontEl.appendChild(spinner);
-        
-        // 2. Kutilgandan so'ng animatsiya
-        setTimeout(() => {
-            spinner.remove();
-            
-            // Orqa fonga yaxshi olma berish
-            backEl.classList.add('good');
-            backEl.innerHTML = '🍎'; // Yaxshi olma belgisi
-            
-            // Flip (aylantirish) animatsiyasini ishga tushirish
-            cellEl.classList.add('flipped');
-            userPath[row] = col;
-            
-            // Qolgan kataklarni sekin xiralashtirib yo'q qilish (videodagidek)
-            const rowCells = document.querySelectorAll(`.cell[data-row="${row}"]`);
-            rowCells.forEach(c => {
-                c.classList.remove('active-basket'); // Chiroqni o'chirish
-                if (c !== cellEl) {
-                    setTimeout(() => { c.style.opacity = '0'; }, 300); // 300ms dan keyin g'oyib bo'ladi
-                }
-            });
-
-            // Yutuqni hisoblash
-            currentWin = betAmount * multipliers[currentRow];
-            curWinDisp.innerText = formatMoney(currentWin);
-            
-            currentRow++;
-            
-            if (currentRow > 9) {
-                setTimeout(cashout, 800); // Oxirgi bosqichdan so'ng avtomatik tugatish
-            } else {
-                setTimeout(() => {
-                    activateRow(currentRow);
-                    isSpinning = false;
-                }, 400); // Keyingi qatorni yoqish
-            }
-        }, 600); // Originaldagi kabi biroz kutish vaqti
-    }
-
-    // YUTUQNI OLISH (REVEAL - OCHILISH)
-    function cashout() {
-        if (currentRow === 0) return;
-        gameState = 'GAMEOVER';
-        
-        balance += currentWin;
-        updateBalance();
-
-        revealBoard();
-
-        // Modalni xiralashgan fon bilan chiqarish
-        setTimeout(() => {
-            modalWinDisp.innerText = formatMoney(currentWin) + " СЎМ";
-            document.getElementById('modal-restart-btn').innerText = `YANGI O'YIN (${formatMoney(betAmount)} СЎМ)`;
-            modal.style.display = 'flex';
-        }, 1200);
-    }
-
-    // O'YIN OXIRIDA BARCHA YASHIRIN OLMALARNI OCHIB KO'RSATISH
-    function revealBoard() {
-        for (let r = 0; r <= 9; r++) {
-            const cells = Array.from(document.querySelectorAll(`.cell[data-row="${r}"]`));
-            const badCount = badApplesCount[r];
-            const pickedCol = userPath[r] !== undefined ? userPath[r] : -1;
-            
-            let availableIndices = [0,1,2,3,4].filter(idx => idx !== pickedCol);
-            availableIndices.sort(() => 0.5 - Math.random());
-            const badIndices = availableIndices.slice(0, badCount);
-
-            cells.forEach((c, idx) => {
-                c.style.opacity = '1'; // Yashiringanlarni qaytarish
-                
-                if (idx !== pickedCol) {
-                    const backEl = c.querySelector('.cell-back');
-                    
-                    if (badIndices.includes(idx)) {
-                        backEl.classList.add('bad');
-                        // Yomon (yeyilgan/chirik) olma o'rnida red background bilan yashil olma emojisi (ogrizok effekti)
-                        backEl.innerHTML = '🍏'; 
-                    } else {
-                        backEl.classList.add('good');
-                        backEl.innerHTML = '🍎';
+                // Ushbu qator uchun olmalarni generatsiya qilish (Tasodifiy joylashtirish)
+                let rowSetup = Array(5).fill('good');
+                let placedBad = 0;
+                while(placedBad < config.badApples) {
+                    let randSlot = Math.floor(Math.random() * 5);
+                    if(rowSetup[randSlot] === 'good') {
+                        rowSetup[randSlot] = 'bad';
+                        placedBad++;
                     }
-                    // Aylanib ochilishi
+                }
+                boardData.push(rowSetup);
+
+                // Katakchalarni yaratish
+                for(let cIdx = 0; cIdx < 5; cIdx++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = rIdx;
+                    cell.dataset.col = cIdx;
+
+                    cell.innerHTML = `
+                        <div class="cell-inner">
+                            <div class="cell-front"></div>
+                            <div class="cell-back"></div>
+                        </div>
+                        <div class="spinner"></div>
+                    `;
+
+                    cell.addEventListener('click', () => handleCellClick(rIdx, cIdx, cell));
+                    cellsCont.appendChild(cell);
+                }
+
+                rowEl.appendChild(cellsCont);
+                boardViewport.appendChild(rowEl);
+            });
+        }
+
+        // O'yinni ishga tushirish
+        function startGame() {
+            gameState = 'PLAYING';
+            currentRowIndex = 0;
+            initBoard();
+            updateActiveRow();
+            currentWinTxt.innerText = '0 SŪM';
+            mainActionBtn.innerText = 'YUTUQNI OLISH';
+            mainActionBtn.className = 'action-btn take-cash';
+            boardViewport.scrollTop = boardViewport.scrollHeight; // Skrollni eng tagiga tushirish
+        }
+
+        // Aktiv qatorni yangilash va skroll qilish
+        function updateActiveRow() {
+            document.querySelectorAll('.row').forEach((row, idx) => {
+                row.classList.remove('active', 'passed');
+                if(idx === currentRowIndex && gameState === 'PLAYING') {
+                    row.classList.add('active');
+                    // Silliq skroll mexanikasi (Aktiv katak doim ko'rinib turishi uchun)
                     setTimeout(() => {
-                        c.classList.add('flipped');
-                    }, r * 100); // Pastdan tepaga qarab to'lqinsimon ochiladi
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                } else if(idx < currentRowIndex) {
+                    row.classList.add('passed');
                 }
             });
         }
-    }
 
-    // MODALNI YOPISH VA QAYTA BOSHLASH
-    function resetGameAndPlay() {
-        modal.style.display = 'none';
-        buildGrid();
-        startGame();
-    }
+        // Katak bosilgandagi asosiy logika va animatsiya
+        function handleCellClick(rIdx, cIdx, cellEl) {
+            if(gameState !== 'PLAYING' || rIdx !== currentRowIndex) return;
 
-    buildGrid();
-</script>
+            const spinner = cellEl.querySelector('.spinner');
+            spinner.style.display = 'block';
+            
+            // Vaqtinchalik bosishni bloklash
+            document.querySelector(`.row.r-${rIdx}`).style.pointerEvents = 'none';
+
+            // Tasodifiy yuklanish animatsiyasi vaqti (videodagidek qisqa kutish)
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                const isGood = boardData[rIdx][cIdx] === 'good';
+                
+                // Faqat tanlangan katakni 3D burib ochish
+                const backFace = cellEl.querySelector('.cell-back');
+                backFace.innerHTML = `<svg><use href="#${isGood ? 'good-apple' : 'bad-apple'}"></use></svg>`;
+                cellEl.classList.add('flipped');
+
+                if(isGood) {
+                    // Yutuqni hisoblash
+                    const curMult = CONFIG[rIdx].mult;
+                    const winAmount = Math.round(BET_AMOUNT * curMult);
+                    currentWinTxt.innerText = winAmount.toLocaleString('uz-UZ') + ' SŪM';
+
+                    if(currentRowIndex === 9) {
+                        // Eng yuqori cho'qqiga yetganda g'alaba
+                        setTimeout(() => endGame(true), 600);
+                    } else {
+                        currentRowIndex++;
+                        gameState = 'PLAYING';
+                        updateActiveRow();
+                    }
+                } else {
+                    // Mag'lubiyat holati
+                    setTimeout(() => endGame(false), 600);
+                }
+            }, 500);
+        }
+
+        // O'yin yakunlanganda barcha olmalarni bir vaqtda ochish
+        function revealFullBoard() {
+            const allCells = document.querySelectorAll('.cell');
+            allCells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                const isGood = boardData[r][c] === 'good';
+                
+                const backFace = cell.querySelector('.cell-back');
+                backFace.innerHTML = `<svg><use href="#${isGood ? 'good-apple' : 'bad-apple'}"></use></svg>`;
+                cell.classList.add('flipped');
+            });
+            // Barcha qatorlarni vizual ochish
+            document.querySelectorAll('.row').forEach(r => r.style.opacity = '1');
+        }
+
+        // O'yin tugash funksiyasi
+        function endGame(isWin) {
+            gameState = 'ENDED';
+            revealFullBoard();
+
+            let finalWin = 0;
+            if(isWin) {
+                finalWin = Math.round(BET_AMOUNT * CONFIG[currentRowIndex].mult);
+                modalTitle.innerText = "G'alaba!";
+                modalDesc.innerText = "Sizning yutug'ingiz:";
+                modalWinAmount.innerText = finalWin.toLocaleString('uz-UZ') + ' SŪM';
+            } else {
+                modalTitle.innerText = "Omadsizlik";
+                modalDesc.innerText = "Yana bir bor urinib ko'ring";
+                modalWinAmount.innerText = '0 SŪM';
+            }
+
+            setTimeout(() => {
+                resultOverlay.classList.add('show');
+            }, 800);
+
+            resetControls();
+        }
+
+        function resetControls() {
+            mainActionBtn.innerText = 'O\'YINNI BOSHLASH';
+            mainActionBtn.className = 'action-btn';
+        }
+
+        // Naqd pulni yechib olish tugmasi bosilganda
+        mainActionBtn.addEventListener('click', () => {
+            if(gameState === 'IDLE' || gameState === 'ENDED') {
+                startGame();
+            } else if(gameState === 'PLAYING') {
+                if(currentRowIndex > 0) {
+                    endGame(true);
+                }
+            }
+        });
+
+        // Qayta o'ynash tugmasi
+        modalBtn.addEventListener('click', () => {
+            resultOverlay.classList.remove('show');
+            startGame();
+        });
+
+        // Ilk yuklangandagi holat
+        initBoard();
+    </script>
 </body>
 </html>
