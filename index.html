@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RICHI28 - Apple of Fortune (Premium Hacker Edition)</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* Asosiy Premium Hacker Dizayn: Obsidian Black va Liquid Gold */
         :root {
@@ -619,6 +620,11 @@
     </div>
 
     <script>
+        // Telegram Web App init
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // To'liq ekran qilish
+        tg.ready();
+
         const configData = [
             { mult: 1.23, bads: 1 },
             { mult: 1.54, bads: 1 },
@@ -706,6 +712,8 @@
 
         function modifyBet(type) {
             if (isPlaying) return;
+            // TWA orqali yengil tebranish berish
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             
             let num = parseInt(betInput.value.replace(/\s/g, '')) || 0;
 
@@ -733,8 +741,11 @@
             let parsedBet = parseInt(betInput.value.replace(/\s/g, '')) || 0;
             if(parsedBet < 10000) {
                 alert("Minimal garov 10 000 UZS!");
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
             currentBet = parsedBet;
 
             isPlaying = true;
@@ -788,6 +799,9 @@
             if (!isPlaying || lockClicks || rIdx !== currentRow) return;
 
             lockClicks = true;
+            
+            // Tugma bosilganda TWA orqali tebranish qo'shamiz
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
             // [100% YUTISH ALGORITMI]
             if(cellElement.dataset.matrixType === 'bad') {
@@ -810,6 +824,8 @@
             setTimeout(() => {
                 spinner.style.display = 'none';
                 cellElement.classList.add('opened-win');
+                
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
                 const previousPrize = currentRow === 0 ? 0 : Math.floor(currentBet * configData[currentRow - 1].mult);
                 const currentPrize = Math.floor(currentBet * configData[currentRow].mult);
@@ -855,6 +871,7 @@
                 modalAmountText.textContent = '0 UZS';
                 resultOverlay.classList.add('show');
                 animateValue(modalAmountText, 0, totalAmount, 1000);
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }, 1000);
         }
 
@@ -868,6 +885,7 @@
         });
 
         restartBtn.addEventListener('click', () => {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             resultOverlay.classList.remove('show');
             currentRow = -1;
             lockClicks = false;
