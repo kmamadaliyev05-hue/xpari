@@ -2,908 +2,384 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RICHI28 - Apple of Fortune (Premium Hacker Edition)</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Fortune - RICHI28</title>
     <style>
-        /* Asosiy Premium Hacker Dizayn: Obsidian Black va Liquid Gold */
         :root {
-            --obsidian-black: #050608;
-            --obsidian-light: #0d1015;
-            --obsidian-border: #1a1e26;
-            --liquid-gold: #e5b85c;
-            --liquid-gold-dark: #b38827;
-            --cyber-green: #10b981;
-            --danger-red: #ef4444;
-            --text-muted: #8a94a6;
+            /* Professional va murakkab dizayn uchun ranglar */
+            --theme-primary: #050505;
+            --theme-secondary: #D4AF37;
+            --theme-secondary-glow: rgba(212, 175, 55, 0.4);
+            --theme-on-primary: #ffffff;
+            --cell-bg: rgba(255, 255, 255, 0.02);
+            --cell-border: rgba(212, 175, 55, 0.15);
+            --input-bg: rgba(0, 0, 0, 0.8);
+            --danger-color: #ff3333;
+            --success-color: #33ff33;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Courier New', Courier, monospace; /* Hacker uslubi uchun font */
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Courier New', Courier, monospace; /* Hacker style shrift */
         }
 
         body {
-            background-color: var(--obsidian-black);
-            color: #ffffff;
+            background-color: var(--theme-primary);
+            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #050505 70%);
+            color: var(--theme-on-primary);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             overflow: hidden;
         }
 
         .game-wrapper {
             width: 100%;
-            max-width: 440px;
-            height: 100vh;
-            background: radial-gradient(circle at top, var(--obsidian-light) 0%, var(--obsidian-black) 100%);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-            overflow: hidden;
-        }
-
-        /* Glitch / Scanline Effekti */
-        .game-wrapper::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        /* Yuqori Panel */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: rgba(13, 16, 21, 0.9);
-            border-bottom: 1px solid var(--liquid-gold-dark);
-            z-index: 10;
+            max-width: 640px;
+            background: linear-gradient(145deg, rgba(20,20,20,0.9) 0%, rgba(5,5,5,0.95) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 20px var(--theme-secondary-glow);
             backdrop-filter: blur(10px);
-        }
-
-        .header .title {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--liquid-gold);
-            text-shadow: 0 0 10px rgba(229, 184, 92, 0.4);
-            font-family: 'Helvetica Neue', sans-serif;
-        }
-
-        .header .balance {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--liquid-gold);
-            background: rgba(229, 184, 92, 0.1);
-            padding: 5px 12px;
-            border-radius: 4px;
-            border: 1px solid rgba(229, 184, 92, 0.3);
-            box-shadow: 0 0 15px rgba(229, 184, 92, 0.1);
-        }
-
-        /* O'yin Maydoni */
-        .board-area {
-            flex-grow: 1;
             position: relative;
-            overflow-y: hidden;
-            padding: 10px 15px;
-            display: flex;
-            align-items: flex-end;
-            z-index: 5;
+            z-index: 10;
         }
 
-        .board {
-            width: 100%;
-            display: flex;
-            flex-direction: column-reverse;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            padding-bottom: 10px;
+        /* 10 qator, 5 ustunli to'r */
+        .adaptive-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 8px;
+            margin-bottom: 30px;
+            perspective: 1000px;
         }
 
-        /* Qator Stili */
-        .row {
-            display: flex;
-            align-items: center;
-            height: 54px;
-            margin-bottom: 6px;
-            opacity: 0.3;
-            transition: all 0.4s ease;
-            border-radius: 6px;
-            padding: 2px;
-            position: relative;
-        }
-
-        .row::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 0%;
-            height: 1px;
-            background: var(--liquid-gold);
-            transition: width 0.5s ease;
-        }
-
-        .row.active {
-            opacity: 1;
-            background: linear-gradient(90deg, rgba(229, 184, 92, 0.1) 0%, transparent 100%);
-        }
-
-        .row.active::after {
-            width: 100%;
-            box-shadow: 0 0 8px var(--liquid-gold);
-        }
-
-        .row.passed {
-            opacity: 0.6;
-        }
-
-        /* Koeffitsiyentlar */
-        .multiplier {
-            width: 55px;
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--text-muted);
-            text-align: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-            padding: 6px 0;
-            border-radius: 4px;
-            background-color: var(--obsidian-border);
-            border: 1px solid #282e37;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        .row.active .multiplier {
-            color: var(--obsidian-black);
-            background: var(--liquid-gold);
-            border-color: var(--liquid-gold);
-            box-shadow: 0 0 15px rgba(229, 184, 92, 0.5);
-            transform: scale(1.1);
-        }
-
-        /* Kataklar Guruhi */
-        .cells {
-            display: flex;
-            flex-grow: 1;
-            justify-content: space-between;
-            gap: 6px;
-        }
-
-        /* Yopiq Katak */
         .cell {
-            flex: 1;
             aspect-ratio: 1;
-            position: relative;
-            cursor: pointer;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            border: 1px solid #30363d;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 6px rgba(0,0,0,0.4);
+            background-color: var(--cell-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
-        }
-
-        .row.active .cell::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(transparent, var(--liquid-gold), transparent 30%);
-            animation: rotate 4s linear infinite;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .row.active .cell:hover::before {
-            opacity: 0.15;
-        }
-
-        .row.active .cell:hover {
-            border-color: var(--liquid-gold);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(229, 184, 92, 0.2);
-        }
-
-        @keyframes rotate {
-            100% { transform: rotate(1turn); }
-        }
-
-        .row:not(.active) .cell {
+            opacity: 0.5; /* Boshlang'ich holatda nofaol */
             pointer-events: none;
         }
 
-        /* Ochilgan Kataklar */
-        .cell.opened-win {
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, var(--obsidian-black) 100%);
-            border: 1px solid var(--cyber-green);
-            box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2), 0 0 10px rgba(16, 185, 129, 0.3);
+        /* Faol qator uchun dizayn */
+        .cell.active-row {
+            opacity: 1;
+            pointer-events: auto;
+            border-color: var(--theme-secondary);
+            box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.1);
+            animation: pulseGlow 2s infinite alternate;
         }
 
-        .cell.opened-lose {
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, var(--obsidian-black) 100%);
-            border: 1px solid var(--danger-red);
-            opacity: 0.5;
+        .cell.active-row:hover {
+            transform: translateY(-2px) scale(1.05);
+            background-color: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 5px 15px var(--theme-secondary-glow);
         }
 
-        /* SVG Rasmlar */
-        .apple-svg {
-            width: 60%;
-            height: 60%;
-            display: none;
-            z-index: 2;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        /* Ochildan keyingi holatlar */
+        .cell.revealed.success {
+            background: rgba(51, 255, 51, 0.15);
+            border-color: var(--success-color);
+            opacity: 1;
         }
 
-        .cell.opened-win .apple-svg.good,
-        .cell.opened-lose .apple-svg.bad {
+        .cell.revealed.danger {
+            background: rgba(255, 51, 51, 0.15);
+            border-color: var(--danger-color);
+            opacity: 1;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .apple {
             display: block;
-            animation: glitchPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: scale(0.1) translateY(20px);
+            animation: revealApple 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
         }
 
-        @keyframes glitchPop {
-            0% { transform: scale(0) skewX(20deg); opacity: 0; filter: hue-rotate(90deg); }
-            50% { transform: scale(1.2) skewX(-10deg); opacity: 0.8; filter: hue-rotate(-90deg); }
-            100% { transform: scale(1) skewX(0); opacity: 1; filter: hue-rotate(0); }
+        @keyframes revealApple {
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Yuklanish Doirasi (Matrix uslubida) */
-        .loading-spinner {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(229, 184, 92, 0.1);
-            border-top-color: var(--liquid-gold);
-            border-radius: 50%;
-            animation: spin 0.6s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
-            display: none;
-            z-index: 3;
+        @keyframes pulseGlow {
+            0% { box-shadow: inset 0 0 5px rgba(212, 175, 55, 0.1); }
+            100% { box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.3); }
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
         }
 
-        /* Pastki Panel */
-        .bottom-panel {
-            background-color: rgba(5, 6, 8, 0.95);
-            border-top: 1px solid var(--obsidian-border);
-            padding: 20px;
+        .controls {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            z-index: 10;
-            position: relative;
+            gap: 16px;
         }
 
-        .bottom-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--liquid-gold-dark), transparent);
-        }
-
-        /* Garov Paneli */
-        .bet-control-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .bet-label-row {
+        .bet-section {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 600;
+            align-items: center;
+            background: var(--input-bg);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--theme-secondary);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .bet-label {
+            font-size: 14px;
+            color: #aaa;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .bet-input-wrapper {
             display: flex;
-            background-color: var(--obsidian-light);
-            border: 1px solid var(--obsidian-border);
-            border-radius: 4px;
-            overflow: hidden;
-            height: 48px;
             align-items: center;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            gap: 8px;
         }
 
-        .bet-input {
-            flex-grow: 1;
+        .bet-input-wrapper input {
             background: transparent;
             border: none;
+            color: var(--theme-secondary);
+            font-size: 22px;
+            font-weight: 700;
+            width: 140px;
+            text-align: right;
             outline: none;
-            color: var(--liquid-gold);
-            font-size: 18px;
-            font-weight: 800;
-            padding: 0 15px;
-            width: 100%;
-            text-shadow: 0 0 5px rgba(229, 184, 92, 0.2);
+            text-shadow: 0 0 5px var(--theme-secondary-glow);
         }
 
-        .bet-btn {
-            background-color: var(--obsidian-border);
-            border: none;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 800;
-            width: 48px;
-            height: 100%;
-            cursor: pointer;
-            border-left: 1px solid var(--obsidian-black);
-            transition: all 0.2s;
-            font-family: 'Helvetica Neue', sans-serif;
+        .bet-input-wrapper input:disabled {
+            color: #888;
+            text-shadow: none;
         }
 
-        .bet-btn:hover {
-            background-color: var(--liquid-gold-dark);
-            color: var(--obsidian-black);
+        .bet-input-wrapper input::-webkit-outer-spin-button,
+        .bet-input-wrapper input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        /* Yutuq Indikatori */
-        .winnings-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(229, 184, 92, 0.05);
-            border: 1px dashed var(--liquid-gold);
-            padding: 12px 15px;
-            border-radius: 4px;
-            display: none;
-            animation: pulse-border 2s infinite;
-        }
-
-        @keyframes pulse-border {
-            0% { border-color: rgba(229, 184, 92, 0.4); }
-            50% { border-color: rgba(229, 184, 92, 1); box-shadow: inset 0 0 10px rgba(229, 184, 92, 0.1); }
-            100% { border-color: rgba(229, 184, 92, 0.4); }
-        }
-
-        .winnings-status span {
-            font-size: 12px;
-            color: #d1d5db;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .winnings-status .amount {
-            font-size: 18px;
+        .currency {
+            font-size: 16px;
             font-weight: bold;
-            color: var(--liquid-gold);
-            text-shadow: 0 0 8px rgba(229, 184, 92, 0.4);
+            color: var(--theme-secondary);
         }
 
-        /* Tugmalar */
-        .action-button {
-            width: 100%;
-            height: 52px;
+        .play-btn {
+            background: linear-gradient(135deg, #D4AF37 0%, #8A6D1C 100%);
+            color: #000;
             border: none;
-            border-radius: 4px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            font-family: 'Helvetica Neue', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .action-button::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: all 0.5s ease;
-        }
-
-        .action-button:hover::after {
-            left: 100%;
-        }
-
-        .btn-place-bet {
-            background: linear-gradient(180deg, var(--liquid-gold) 0%, var(--liquid-gold-dark) 100%);
-            color: var(--obsidian-black);
-            box-shadow: 0 5px 20px rgba(229, 184, 92, 0.3);
-        }
-
-        .btn-cashout {
-            background: linear-gradient(180deg, var(--cyber-green) 0%, #059669 100%);
-            color: #ffffff;
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-disabled {
-            background: var(--obsidian-border) !important;
-            color: #4b5563 !important;
-            box-shadow: none !important;
-            pointer-events: none;
-            border: 1px solid #374151;
-        }
-
-        /* Modal */
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(5, 6, 8, 0.95);
-            backdrop-filter: blur(5px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-
-        .overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: var(--obsidian-light);
-            border: 1px solid var(--liquid-gold);
+            padding: 18px;
             border-radius: 8px;
-            padding: 35px 30px;
-            width: 85%;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(229, 184, 92, 0.05);
-            transform: translateY(30px) scale(0.9);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-        }
-
-        .overlay.show .modal {
-            transform: translateY(0) scale(1);
-        }
-
-        .modal::before {
-            content: '';
-            position: absolute;
-            top: -2px; left: 50%; transform: translateX(-50%);
-            width: 50%; height: 2px;
-            background: var(--liquid-gold);
-            box-shadow: 0 0 15px var(--liquid-gold);
-        }
-
-        .modal-title {
-            font-size: 26px;
+            font-size: 18px;
             font-weight: 900;
-            color: var(--liquid-gold);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-family: 'Helvetica Neue', sans-serif;
-            text-shadow: 0 0 15px rgba(229, 184, 92, 0.4);
-        }
-
-        .modal-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .modal-amount {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
-        .btn-restart {
-            background-color: var(--obsidian-border);
-            color: #ffffff;
-            padding: 15px 35px;
-            border: 1px solid var(--liquid-gold-dark);
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 800;
             cursor: pointer;
-            width: 100%;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: all 0.3s;
-            font-family: 'Helvetica Neue', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .btn-restart:hover {
-            background-color: var(--liquid-gold);
-            color: var(--obsidian-black);
-            box-shadow: 0 0 15px rgba(229, 184, 92, 0.4);
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
+            background: linear-gradient(135deg, #F3C93F 0%, #AA8722 100%);
+        }
+
+        .play-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .play-btn.cashout {
+            background: linear-gradient(135deg, #33ff33 0%, #009900 100%);
+            box-shadow: 0 4px 15px rgba(51, 255, 51, 0.4);
+        }
+        .play-btn.cashout:hover {
+            background: linear-gradient(135deg, #66ff66 0%, #00cc00 100%);
+            box-shadow: 0 6px 25px rgba(51, 255, 51, 0.6);
         }
     </style>
 </head>
 <body>
 
-    <svg style="display: none;">
-        <symbol id="apple-good" viewBox="0 0 100 100">
-            <circle cx="50" cy="55" r="38" fill="url(#gradGood)" />
-            <path d="M50 18 Q55 5 68 8" fill="none" stroke="#5c3a21" stroke-width="5" stroke-linecap="round" />
-            <path d="M50 18 Q32 8 38 25 Q50 30 50 18 Z" fill="#10b981" />
-            <ellipse cx="34" cy="42" rx="4" ry="8" fill="rgba(255,255,255,0.4)" transform="rotate(-20 34 42)" />
-            <defs>
-                <radialGradient id="gradGood" cx="35%" cy="35%" r="70%">
-                    <stop offset="0%" stop-color="#ff4d4d" />
-                    <stop offset="85%" stop-color="#cc0000" />
-                    <stop offset="100%" stop-color="#7a0000" />
-                </radialGradient>
-            </defs>
-        </symbol>
-
-        <symbol id="apple-bad" viewBox="0 0 100 100">
-            <path d="M50 18 C68 18 85 32 85 55 C85 78 68 92 50 92 C32 92 15 78 15 55 C15 32 32 18 50 18 Z" fill="#6b6b6b" opacity="0.1"/>
-            <path d="M32 88 Q50 96 68 88 C76 60 24 60 32 88 Z" fill="url(#gradBad)" />
-            <path d="M32 22 Q50 14 68 22 C76 40 24 40 32 22 Z" fill="url(#gradBad)" />
-            <rect x="46" y="32" width="8" height="36" fill="#a39068" rx="4" />
-            <circle cx="43" cy="50" r="3" fill="#1a110a" />
-            <circle cx="57" cy="55" r="3" fill="#1a110a" />
-            <path d="M50 18 Q55 5 68 8" fill="none" stroke="#3d2514" stroke-width="5" stroke-linecap="round" />
-            <defs>
-                <radialGradient id="gradBad" cx="35%" cy="35%" r="70%">
-                    <stop offset="0%" stop-color="#692222" />
-                    <stop offset="100%" stop-color="#2a0d0d" />
-                </radialGradient>
-            </defs>
-        </symbol>
-    </svg>
-
     <div class="game-wrapper">
-        <div class="header">
-            <div class="title">APPLE OF FORTUNE</div>
-            <div class="balance">RICHI28 SYS</div>
-        </div>
+        <div class="adaptive-container" id="grid"></div>
 
-        <div class="board-area">
-            <div class="board" id="gameBoard">
-                </div>
-        </div>
-
-        <div class="bottom-panel">
-            <div class="bet-control-container" id="betControlBlock">
-                <div class="bet-label-row">
-                    <span>Garov miqdori (UZS)</span>
-                    <span>Min: 10k / Max: 10M</span>
-                </div>
+        <div class="controls">
+            <div class="bet-section">
+                <span class="bet-label">Tikish summasi:</span>
                 <div class="bet-input-wrapper">
-                    <input type="text" class="bet-input" id="betInput" value="300 000">
-                    <button class="bet-btn" onclick="modifyBet('min')">MIN</button>
-                    <button class="bet-btn" onclick="modifyBet('half')">1/2</button>
-                    <button class="bet-btn" onclick="modifyBet('double')">X2</button>
-                    <button class="bet-btn" onclick="modifyBet('max')">MAX</button>
+                    <input type="number" id="betAmount" value="3000" min="3000" max="6009401">
+                    <span class="currency">UZS</span>
                 </div>
             </div>
-
-            <div class="winnings-status" id="winningsDisplay">
-                <span>Hozirgi yutuq:</span>
-                <span class="amount" id="currentWinText">0 UZS</span>
-            </div>
-
-            <button class="action-button btn-place-bet" id="actionBtn">Tizimni Ishga Tushirish</button>
-        </div>
-
-        <div class="overlay" id="resultOverlay">
-            <div class="modal">
-                <div class="modal-title">G'ALABA</div>
-                <div class="modal-desc">Muvaffaqiyatli xakerlik hujumi yakunlandi</div>
-                <div class="modal-amount" id="modalAmountText">0 UZS</div>
-                <button class="btn-restart" id="restartBtn">Yangi seansni boshlash</button>
-            </div>
+            <button class="play-btn" id="actionBtn">Garov tikish</button>
         </div>
     </div>
 
     <script>
-        // Telegram Web App init
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // To'liq ekran qilish
-        tg.ready();
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('grid');
+            const betInput = document.getElementById('betAmount');
+            const actionBtn = document.getElementById('actionBtn');
 
-        const configData = [
-            { mult: 1.23, bads: 1 },
-            { mult: 1.54, bads: 1 },
-            { mult: 1.93, bads: 1 },
-            { mult: 2.41, bads: 1 },
-            { mult: 4.02, bads: 2 },
-            { mult: 6.71, bads: 2 },
-            { mult: 11.18, bads: 2 },
-            { mult: 27.97, bads: 3 },
-            { mult: 69.93, bads: 3 },
-            { mult: 349.68, bads: 4 }
-        ];
-
-        let currentBet = 300000;
-        let currentRow = -1; 
-        let isPlaying = false;
-        let lockClicks = false; 
-
-        const board = document.getElementById('gameBoard');
-        const actionBtn = document.getElementById('actionBtn');
-        const betInput = document.getElementById('betInput');
-        const betControlBlock = document.getElementById('betControlBlock');
-        const winningsDisplay = document.getElementById('winningsDisplay');
-        const currentWinText = document.getElementById('currentWinText');
-        
-        const resultOverlay = document.getElementById('resultOverlay');
-        const modalAmountText = document.getElementById('modalAmountText');
-        const restartBtn = document.getElementById('restartBtn');
-
-        function buildBoard() {
-            board.innerHTML = '';
-            board.style.transform = 'translateY(0)';
+            // Ko'paytma koeffitsientlari (pastdan tepaga qarab 10 ta qator uchun)
+            const multipliers = [1.23, 1.54, 1.93, 2.41, 4.02, 6.71, 11.18, 27.9, 69.8, 349.0];
             
-            configData.forEach((config, rIdx) => {
-                const row = document.createElement('div');
-                row.className = 'row';
-                row.id = `row-${rIdx}`;
+            let isPlaying = false;
+            let currentStep = 0; // 0 bu eng pastki qator
+            let currentBet = 0;
+            let cells = [];
 
-                const multLabel = document.createElement('div');
-                multLabel.className = 'multiplier';
-                multLabel.textContent = `x${config.mult}`;
-                row.appendChild(multLabel);
+            // 50 ta katakni yaratish (0 eng tepa chap, 49 eng pastki o'ng)
+            for (let i = 0; i < 50; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                
+                cell.addEventListener('click', () => handleCellClick(i));
+                grid.appendChild(cell);
+                cells.push(cell);
+            }
 
-                const cellsWrapper = document.createElement('div');
-                cellsWrapper.className = 'cells';
-
-                let cellLayout = ['good', 'good', 'good', 'good', 'good'];
-                let badPlaced = 0;
-                while(badPlaced < config.bads) {
-                    let rSlot = Math.floor(Math.random() * 5);
-                    if(cellLayout[rSlot] === 'good') {
-                        cellLayout[rSlot] = 'bad';
-                        badPlaced++;
-                    }
-                }
-
-                for (let cIdx = 0; cIdx < 5; cIdx++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.dataset.matrixType = cellLayout[cIdx];
-
-                    const spinner = document.createElement('div');
-                    spinner.className = 'loading-spinner';
-
-                    const goodAppleSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    goodAppleSvg.setAttribute('class', 'apple-svg good');
-                    goodAppleSvg.innerHTML = '<use href="#apple-good"></use>';
-
-                    const badAppleSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    badAppleSvg.setAttribute('class', 'apple-svg bad');
-                    badAppleSvg.innerHTML = '<use href="#apple-bad"></use>';
-
-                    cell.appendChild(spinner);
-                    cell.appendChild(goodAppleSvg);
-                    cell.appendChild(badAppleSvg);
-
-                    cell.onclick = () => onCellSelected(rIdx, cIdx, cell);
-                    cellsWrapper.appendChild(cell);
-                }
-
-                row.appendChild(cellsWrapper);
-                board.appendChild(row);
+            // Garov miqdorini nazorat qilish
+            betInput.addEventListener('blur', (e) => {
+                let val = parseInt(e.target.value);
+                if (isNaN(val) || val < 3000) e.target.value = 3000;
+                else if (val > 6009401) e.target.value = 6009401;
             });
-        }
 
-        function modifyBet(type) {
-            if (isPlaying) return;
-            // TWA orqali yengil tebranish berish
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            
-            let num = parseInt(betInput.value.replace(/\s/g, '')) || 0;
-
-            if (type === 'min') num = 10000;
-            else if (type === 'max') num = 10000000;
-            else if (type === 'double') num = num * 2;
-            else if (type === 'half') num = Math.floor(num / 2);
-
-            if (num < 10000) num = 10000;
-            if (num > 10000000) num = 10000000;
-
-            currentBet = num;
-            betInput.value = formatNumber(currentBet);
-        }
-
-        betInput.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
-            let num = parseInt(val) || 0;
-            if (num > 10000000) num = 10000000;
-            currentBet = num;
-            e.target.value = formatNumber(num);
-        });
-
-        function startMatch() {
-            let parsedBet = parseInt(betInput.value.replace(/\s/g, '')) || 0;
-            if(parsedBet < 10000) {
-                alert("Minimal garov 10 000 UZS!");
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                return;
-            }
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-            currentBet = parsedBet;
-
-            isPlaying = true;
-            currentRow = 0;
-            
-            betControlBlock.style.display = 'none';
-            winningsDisplay.style.display = 'flex';
-            currentWinText.textContent = '0 UZS';
-
-            buildBoard();
-            refreshVisualRows();
-
-            actionBtn.className = 'action-button btn-disabled';
-            actionBtn.textContent = 'JARAYONDA...';
-        }
-
-        function refreshVisualRows() {
-            for (let i = 0; i < configData.length; i++) {
-                const targetRow = document.getElementById(`row-${i}`);
-                targetRow.className = 'row';
-                
-                if (i === currentRow) {
-                    targetRow.classList.add('active');
-                } else if (i < currentRow) {
-                    targetRow.classList.add('passed');
-                }
-            }
-
-            if (currentRow > 3) {
-                const stepOffset = (currentRow - 3) * 60; 
-                board.style.transform = `translateY(${stepOffset}px)`;
-            }
-        }
-
-        // Hacker matn effekti (Decoding)
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const currentVal = Math.floor(progress * (end - start) + start);
-                obj.textContent = formatNumber(currentVal) + ' UZS';
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        function onCellSelected(rIdx, cIdx, cellElement) {
-            if (!isPlaying || lockClicks || rIdx !== currentRow) return;
-
-            lockClicks = true;
-            
-            // Tugma bosilganda TWA orqali tebranish qo'shamiz
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-            // [100% YUTISH ALGORITMI]
-            if(cellElement.dataset.matrixType === 'bad') {
-                cellElement.dataset.matrixType = 'good';
-                const siblingCells = document.getElementById(`row-${rIdx}`).querySelectorAll('.cell');
-                
-                let reordered = false;
-                siblingCells.forEach((c, idx) => {
-                    if(!reordered && idx !== cIdx && c.dataset.matrixType === 'good') {
-                        c.dataset.matrixType = 'bad';
-                        reordered = true;
-                    }
-                });
-            }
-
-            const spinner = cellElement.querySelector('.loading-spinner');
-            spinner.style.display = 'block';
-            cellElement.style.borderColor = 'var(--liquid-gold)';
-
-            setTimeout(() => {
-                spinner.style.display = 'none';
-                cellElement.classList.add('opened-win');
-                
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
-                const previousPrize = currentRow === 0 ? 0 : Math.floor(currentBet * configData[currentRow - 1].mult);
-                const currentPrize = Math.floor(currentBet * configData[currentRow].mult);
-                
-                animateValue(currentWinText, previousPrize, currentPrize, 400);
-
-                actionBtn.className = 'action-button btn-cashout';
-                actionBtn.textContent = 'YUTUQNI YECHISH';
-
-                if (currentRow === configData.length - 1) {
-                    setTimeout(() => completeMatch(currentPrize), 800);
+            // Tugma bosilganda (Garov tikish yoki Yutuqni olish)
+            actionBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    cashOut();
                 } else {
-                    currentRow++;
-                    lockClicks = false;
-                    refreshVisualRows();
+                    startGame();
                 }
-            }, 600);
-        }
+            });
 
-        function completeMatch(totalAmount) {
-            isPlaying = false;
-            
-            const maxOpenedRow = currentRow >= configData.length ? configData.length - 1 : currentRow;
-            for (let i = 0; i <= maxOpenedRow; i++) {
-                const row = document.getElementById(`row-${i}`);
-                row.classList.add('active');
+            function startGame() {
+                currentBet = parseInt(betInput.value);
+                if (currentBet < 3000 || currentBet > 6009401) return;
+
+                isPlaying = true;
+                currentStep = 0;
+                betInput.disabled = true;
                 
-                const targets = row.querySelectorAll('.cell');
-                targets.forEach((c, index) => {
-                    if (!c.classList.contains('opened-win')) {
-                        setTimeout(() => {
-                            if (c.dataset.matrixType === 'good') {
-                                c.classList.add('opened-win');
-                            } else {
-                                c.classList.add('opened-lose');
-                            }
-                        }, index * 100); // Kaskad animatsiyasi
-                    }
+                actionBtn.innerText = "Yutuqni olish";
+                actionBtn.classList.add('cashout');
+
+                // To'rni tozalash
+                cells.forEach(c => {
+                    c.innerHTML = '';
+                    c.className = 'cell'; // Barcha classlarni o'chirish (nofaol qilish)
                 });
+
+                enableRow(currentStep);
             }
 
-            setTimeout(() => {
-                modalAmountText.textContent = '0 UZS';
-                resultOverlay.classList.add('show');
-                animateValue(modalAmountText, 0, totalAmount, 1000);
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }, 1000);
-        }
+            function enableRow(step) {
+                // Qator indeksini hisoblash (9 dan 0 gacha, 9 - pastki qator)
+                let rowIdx = 9 - step;
+                let start = rowIdx * 5;
+                let end = start + 5;
 
-        actionBtn.addEventListener('click', () => {
-            if (!isPlaying && currentRow === -1) {
-                startMatch();
-            } else if (isPlaying && currentRow > 0 && !lockClicks) {
-                const safePrize = Math.floor(currentBet * configData[currentRow - 1].mult);
-                completeMatch(safePrize);
+                for (let i = start; i < end; i++) {
+                    cells[i].classList.add('active-row');
+                }
+            }
+
+            function disableRow(step) {
+                let rowIdx = 9 - step;
+                let start = rowIdx * 5;
+                let end = start + 5;
+
+                for (let i = start; i < end; i++) {
+                    cells[i].classList.remove('active-row');
+                }
+            }
+
+            function handleCellClick(index) {
+                if (!isPlaying) return;
+                
+                let rowIdx = Math.floor(index / 5);
+                let targetRowIdx = 9 - currentStep;
+                
+                // Faqatgina faol qatorni bosishga ruxsat
+                if (rowIdx !== targetRowIdx) return;
+
+                // O'yin mantig'i: 1-qatorlarda 1 ta yomon olma bo'lishi ehtimoli
+                // Murakkablik uchun har doim 1 ta yomon olma generatsiya qilamiz
+                let badAppleCol = Math.floor(Math.random() * 5);
+                let clickedCol = index % 5;
+
+                let cell = cells[index];
+                disableRow(currentStep);
+
+                if (clickedCol === badAppleCol) {
+                    // Yutqazish
+                    cell.innerHTML = '<span class="apple">🍏</span>'; // Zaharli olma
+                    cell.classList.add('revealed', 'danger');
+                    gameOver();
+                } else {
+                    // Yutish
+                    cell.innerHTML = '<span class="apple">🍎</span>'; // Yaxshi olma
+                    cell.classList.add('revealed', 'success');
+                    
+                    let winAmount = Math.floor(currentBet * multipliers[currentStep]);
+                    actionBtn.innerText = `Yutuqni olish: ${winAmount} UZS`;
+
+                    currentStep++;
+                    if (currentStep > 9) {
+                        cashOut(); // Eng tepaga chiqsa avtomatik yutuq
+                    } else {
+                        enableRow(currentStep);
+                    }
+                }
+            }
+
+            function gameOver() {
+                isPlaying = false;
+                betInput.disabled = false;
+                actionBtn.innerText = "Garov tikish";
+                actionBtn.classList.remove('cashout');
+            }
+
+            function cashOut() {
+                if (currentStep === 0) return; // Hech narsa yutmasdan chiqib ketish taqiqlanadi
+                
+                let winAmount = Math.floor(currentBet * multipliers[currentStep - 1]);
+                alert(`Sizning yutug'ingiz: ${winAmount} UZS!`); // Bu yerni o'zingizning modal oyna funksiyangizga almashtirishingiz mumkin
+                
+                gameOver();
             }
         });
-
-        restartBtn.addEventListener('click', () => {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            resultOverlay.classList.remove('show');
-            currentRow = -1;
-            lockClicks = false;
-            
-            actionBtn.className = 'action-button btn-place-bet';
-            actionBtn.textContent = 'Tizimni Ishga Tushirish';
-            
-            winningsDisplay.style.display = 'none';
-            betControlBlock.style.display = 'flex';
-            
-            buildBoard();
-        });
-
-        function formatNumber(val) {
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-        }
-
-        buildBoard();
     </script>
 </body>
 </html>
