@@ -3,51 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Fortune - RICHI28</title>
+    <title>Apple Fortune</title>
     <style>
         :root {
             /* Professional va murakkab dizayn uchun ranglar */
-            --theme-primary: #050505;
+            --theme-primary: #0B0B0B;
             --theme-secondary: #D4AF37;
-            --theme-secondary-glow: rgba(212, 175, 55, 0.4);
             --theme-on-primary: #ffffff;
-            --cell-bg: rgba(255, 255, 255, 0.02);
-            --cell-border: rgba(212, 175, 55, 0.15);
-            --input-bg: rgba(0, 0, 0, 0.8);
-            --danger-color: #ff3333;
-            --success-color: #33ff33;
+            --cell-bg: rgba(255, 255, 255, 0.03);
+            --cell-border: rgba(212, 175, 55, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.6);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace; /* Hacker uslubi uchun font */
+            font-family: 'Roboto', sans-serif;
             user-select: none;
         }
 
         body {
             background-color: var(--theme-primary);
-            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #050505 70%);
             color: var(--theme-on-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
         }
 
         .game-wrapper {
             width: 100%;
             max-width: 640px;
-            background: linear-gradient(145deg, rgba(20,20,20,0.9) 0%, rgba(5,5,5,0.95) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: linear-gradient(145deg, #1a1a1a 0%, #050505 100%);
+            border: 1px solid rgba(212, 175, 55, 0.15);
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 20px var(--theme-secondary-glow);
-            backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.1);
         }
 
         /* 10 qator, 5 ustunli to'r */
@@ -55,7 +47,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(10, 1fr);
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 30px;
             perspective: 1000px;
         }
@@ -64,7 +56,7 @@
             aspect-ratio: 1;
             background-color: var(--cell-bg);
             border: 1px solid var(--cell-border);
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -73,61 +65,28 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            opacity: 0.5; /* Boshlang'ich holatda nofaol */
-            pointer-events: none;
         }
 
-        /* Faol qator uchun dizayn */
-        .cell.active-row {
-            opacity: 1;
-            pointer-events: auto;
+        .cell:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
             border-color: var(--theme-secondary);
-            box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.1);
-            animation: pulseGlow 2s infinite alternate;
-        }
-
-        .cell.active-row:hover {
-            transform: translateY(-2px) scale(1.05);
-            background-color: rgba(212, 175, 55, 0.1);
-            box-shadow: 0 5px 15px var(--theme-secondary-glow);
-        }
-
-        /* Ochildan keyingi holatlar */
-        .cell.revealed.success {
-            background: rgba(51, 255, 51, 0.15);
-            border-color: var(--success-color);
-            opacity: 1;
-        }
-
-        .cell.revealed.danger {
-            background: rgba(255, 51, 51, 0.15);
-            border-color: var(--danger-color);
-            opacity: 1;
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            background-color: rgba(255, 255, 255, 0.08);
         }
 
         .apple {
             display: block;
             opacity: 0;
-            transform: scale(0.1) translateY(20px);
-            animation: revealApple 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
+            transform: scale(0.5) translateY(10px);
+            animation: revealApple 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
 
         @keyframes revealApple {
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        @keyframes pulseGlow {
-            0% { box-shadow: inset 0 0 5px rgba(212, 175, 55, 0.1); }
-            100% { box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.3); }
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
-            40%, 60% { transform: translate3d(3px, 0, 0); }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .controls {
@@ -142,16 +101,14 @@
             align-items: center;
             background: var(--input-bg);
             padding: 12px 20px;
-            border-radius: 8px;
-            border: 1px solid var(--theme-secondary);
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
 
         .bet-label {
             font-size: 14px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #888;
         }
 
         .bet-input-wrapper {
@@ -164,19 +121,14 @@
             background: transparent;
             border: none;
             color: var(--theme-secondary);
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            width: 140px;
+            width: 120px;
             text-align: right;
             outline: none;
-            text-shadow: 0 0 5px var(--theme-secondary-glow);
         }
 
-        .bet-input-wrapper input:disabled {
-            color: #888;
-            text-shadow: none;
-        }
-
+        /* Raqam kiritish maydonidagi o'qlarni olib tashlash */
         .bet-input-wrapper input::-webkit-outer-spin-button,
         .bet-input-wrapper input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -185,61 +137,52 @@
 
         .currency {
             font-size: 16px;
-            font-weight: bold;
-            color: var(--theme-secondary);
+            font-weight: 500;
+            color: #aaa;
         }
 
         .play-btn {
-            background: linear-gradient(135deg, #D4AF37 0%, #8A6D1C 100%);
+            background: linear-gradient(135deg, #D4AF37 0%, #AA8C2C 100%);
             color: #000;
             border: none;
             padding: 18px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 18px;
-            font-weight: 900;
+            font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .play-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
-            background: linear-gradient(135deg, #F3C93F 0%, #AA8722 100%);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            background: linear-gradient(135deg, #E5C354 0%, #BBA03B 100%);
         }
 
         .play-btn:active {
             transform: translateY(1px);
             box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
         }
-        
-        .play-btn.cashout {
-            background: linear-gradient(135deg, #33ff33 0%, #009900 100%);
-            box-shadow: 0 4px 15px rgba(51, 255, 51, 0.4);
-        }
-        .play-btn.cashout:hover {
-            background: linear-gradient(135deg, #66ff66 0%, #00cc00 100%);
-            box-shadow: 0 6px 25px rgba(51, 255, 51, 0.6);
-        }
     </style>
 </head>
 <body>
 
     <div class="game-wrapper">
-        <div class="adaptive-container" id="grid"></div>
+        <div class="adaptive-container" id="grid">
+            </div>
 
         <div class="controls">
             <div class="bet-section">
-                <span class="bet-label">Tikish summasi:</span>
+                <span class="bet-label">Garov miqdori:</span>
                 <div class="bet-input-wrapper">
                     <input type="number" id="betAmount" value="3000" min="3000" max="6009401">
                     <span class="currency">UZS</span>
                 </div>
             </div>
-            <button class="play-btn" id="actionBtn">Garov tikish</button>
+            <button class="play-btn">Garov tikish</button>
         </div>
     </div>
 
@@ -247,137 +190,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             const grid = document.getElementById('grid');
             const betInput = document.getElementById('betAmount');
-            const actionBtn = document.getElementById('actionBtn');
 
-            // Ko'paytma koeffitsientlari (pastdan tepaga qarab 10 ta qator uchun)
-            const multipliers = [1.23, 1.54, 1.93, 2.41, 4.02, 6.71, 11.18, 27.9, 69.8, 349.0];
-            
-            let isPlaying = false;
-            let currentStep = 0; // 0 bu eng pastki qator
-            let currentBet = 0;
-            let cells = [];
+            // Garov miqdorini nazorat qilish (Min: 3 000, Max: 6 009 401)
+            betInput.addEventListener('blur', (e) => {
+                let val = parseInt(e.target.value);
+                if (isNaN(val) || val < 3000) {
+                    e.target.value = 3000;
+                } else if (val > 6009401) {
+                    e.target.value = 6009401;
+                }
+            });
 
-            // 50 ta katakni yaratish (0 eng tepa chap, 49 eng pastki o'ng)
+            // O'yin maydonini shakllantirish (10 qator x 5 ustun = 50 ta katak)
             for (let i = 0; i < 50; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.dataset.index = i;
                 
-                cell.addEventListener('click', () => handleCellClick(i));
-                grid.appendChild(cell);
-                cells.push(cell);
-            }
-
-            // Garov miqdorini nazorat qilish
-            betInput.addEventListener('blur', (e) => {
-                let val = parseInt(e.target.value);
-                if (isNaN(val) || val < 3000) e.target.value = 3000;
-                else if (val > 6009401) e.target.value = 6009401;
-            });
-
-            // Tugma bosilganda (Garov tikish yoki Yutuqni olish)
-            actionBtn.addEventListener('click', () => {
-                if (isPlaying) {
-                    cashOut();
-                } else {
-                    startGame();
-                }
-            });
-
-            function startGame() {
-                currentBet = parseInt(betInput.value);
-                if (currentBet < 3000 || currentBet > 6009401) return;
-
-                isPlaying = true;
-                currentStep = 0;
-                betInput.disabled = true;
-                
-                actionBtn.innerText = "Yutuqni olish";
-                actionBtn.classList.add('cashout');
-
-                // To'rni tozalash
-                cells.forEach(c => {
-                    c.innerHTML = '';
-                    c.className = 'cell'; // Barcha classlarni o'chirish (nofaol qilish)
-                });
-
-                enableRow(currentStep);
-            }
-
-            function enableRow(step) {
-                // Qator indeksini hisoblash (9 dan 0 gacha, 9 - pastki qator)
-                let rowIdx = 9 - step;
-                let start = rowIdx * 5;
-                let end = start + 5;
-
-                for (let i = start; i < end; i++) {
-                    cells[i].classList.add('active-row');
-                }
-            }
-
-            function disableRow(step) {
-                let rowIdx = 9 - step;
-                let start = rowIdx * 5;
-                let end = start + 5;
-
-                for (let i = start; i < end; i++) {
-                    cells[i].classList.remove('active-row');
-                }
-            }
-
-            function handleCellClick(index) {
-                if (!isPlaying) return;
-                
-                let rowIdx = Math.floor(index / 5);
-                let targetRowIdx = 9 - currentStep;
-                
-                // Faqatgina faol qatorni bosishga ruxsat
-                if (rowIdx !== targetRowIdx) return;
-
-                // O'yin mantig'i: 1-qatorlarda 1 ta yomon olma bo'lishi ehtimoli
-                // Murakkablik uchun har doim 1 ta yomon olma generatsiya qilamiz
-                let badAppleCol = Math.floor(Math.random() * 5);
-                let clickedCol = index % 5;
-
-                let cell = cells[index];
-                disableRow(currentStep);
-
-                if (clickedCol === badAppleCol) {
-                    // Yutqazish
-                    cell.innerHTML = '<span class="apple">🍏</span>'; // Zaharli olma
-                    cell.classList.add('revealed', 'danger');
-                    gameOver();
-                } else {
-                    // Yutish
-                    cell.innerHTML = '<span class="apple">🍎</span>'; // Yaxshi olma
-                    cell.classList.add('revealed', 'success');
-                    
-                    let winAmount = Math.floor(currentBet * multipliers[currentStep]);
-                    actionBtn.innerText = `Yutuqni olish: ${winAmount} UZS`;
-
-                    currentStep++;
-                    if (currentStep > 9) {
-                        cashOut(); // Eng tepaga chiqsa avtomatik yutuq
-                    } else {
-                        enableRow(currentStep);
+                // Bosilganda olmani chiqarish animatsiyasi
+                cell.addEventListener('click', function() {
+                    if (!this.querySelector('.apple')) {
+                        // O'yin mantig'iga qarab bu yerda butun olma 🍎 yoki yeyilgan olma qo'yishingiz mumkin
+                        this.innerHTML = '<span class="apple">🍎</span>';
                     }
-                }
-            }
-
-            function gameOver() {
-                isPlaying = false;
-                betInput.disabled = false;
-                actionBtn.innerText = "Garov tikish";
-                actionBtn.classList.remove('cashout');
-            }
-
-            function cashOut() {
-                if (currentStep === 0) return; // Hech narsa yutmasdan chiqib ketish taqiqlanadi
+                });
                 
-                let winAmount = Math.floor(currentBet * multipliers[currentStep - 1]);
-                alert(`Sizning yutug'ingiz: ${winAmount} UZS!`); // Bu yerni o'zingizning modal oyna funksiyangizga almashtirishingiz mumkin
-                
-                gameOver();
+                grid.appendChild(cell);
             }
         });
     </script>
