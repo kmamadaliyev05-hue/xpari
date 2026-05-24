@@ -3,220 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Fortune</title>
-    <style>
-        :root {
-            /* Professional va murakkab dizayn uchun ranglar */
-            --theme-primary: #0B0B0B;
-            --theme-secondary: #D4AF37;
-            --theme-on-primary: #ffffff;
-            --cell-bg: rgba(255, 255, 255, 0.03);
-            --cell-border: rgba(212, 175, 55, 0.2);
-            --input-bg: rgba(0, 0, 0, 0.6);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--theme-primary);
-            color: var(--theme-on-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .game-wrapper {
-            width: 100%;
-            max-width: 640px;
-            background: linear-gradient(145deg, #1a1a1a 0%, #050505 100%);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.1);
-        }
-
-        /* 10 qator, 5 ustunli to'r */
-        .adaptive-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(10, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
-            perspective: 1000px;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            background-color: var(--cell-bg);
-            border: 1px solid var(--cell-border);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cell:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
-            border-color: var(--theme-secondary);
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .apple {
-            display: block;
-            opacity: 0;
-            transform: scale(0.5) translateY(10px);
-            animation: revealApple 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-        }
-
-        @keyframes revealApple {
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .bet-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--input-bg);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .bet-label {
-            font-size: 14px;
-            color: #888;
-        }
-
-        .bet-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bet-input-wrapper input {
-            background: transparent;
-            border: none;
-            color: var(--theme-secondary);
-            font-size: 20px;
-            font-weight: 700;
-            width: 120px;
-            text-align: right;
-            outline: none;
-        }
-
-        /* Raqam kiritish maydonidagi o'qlarni olib tashlash */
-        .bet-input-wrapper input::-webkit-outer-spin-button,
-        .bet-input-wrapper input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .currency {
-            font-size: 16px;
-            font-weight: 500;
-            color: #aaa;
-        }
-
-        .play-btn {
-            background: linear-gradient(135deg, #D4AF37 0%, #AA8C2C 100%);
-            color: #000;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .play-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
-            background: linear-gradient(135deg, #E5C354 0%, #BBA03B 100%);
-        }
-
-        .play-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
-        }
-    </style>
+    <title>Apple Fortune Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="game-wrapper">
-        <div class="adaptive-container" id="grid">
-            </div>
+    <div class="apple-fortune">
+        <canvas class="apple-fortune__canvas"></canvas>
 
-        <div class="controls">
-            <div class="bet-section">
-                <span class="bet-label">Garov miqdori:</span>
-                <div class="bet-input-wrapper">
-                    <input type="number" id="betAmount" value="3000" min="3000" max="6009401">
-                    <span class="currency">UZS</span>
+        <div class="apple-fortune__container">
+            
+            <header class="apple-fortune__header">
+                <button class="apple-fortune-header__btn apple-fortune-header__btn--sound">
+                    <svg class="apple-fortune-header__ico"><use xlink:href="#sound-icon"></use></svg>
+                </button>
+                <div class="apple-fortune-header__info">
+                    <span class="apple-fortune-header__text">O'yin holati</span>
+                </div>
+            </header>
+
+            <div class="apple-fortune__controls">
+                <div class="apple-fortune-controls__container">
+                    <div class="apple-fortune-controls__value">
+                        <span class="apple-fortune-controls__text">0.00</span>
+                    </div>
+                    <div class="apple-fortune-controls-btns">
+                        <button class="apple-fortune-controls-btns-play">O'ynash</button>
+                        <button class="apple-fortune-controls-btns-take">
+                            <span class="apple-fortune-controls-btns-take__label">Olish</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <button class="play-btn">Garov tikish</button>
+
+        </div>
+
+        <div class="apple-fortune__overlay">
+            <div class="apple-fortune-popup">
+                <div class="apple-fortune-popup__bets">
+                    <div class="apple-fortune-popup-bets">
+                        <button class="apple-fortune-popup-bets__close">X</button>
+                        <div class="apple-fortune-popup-bets__container">
+                            <button class="apple-fortune-popup-bets-play">Tikishni boshlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.getElementById('grid');
-            const betInput = document.getElementById('betAmount');
-
-            // Garov miqdorini nazorat qilish (Min: 3 000, Max: 6 009 401)
-            betInput.addEventListener('blur', (e) => {
-                let val = parseInt(e.target.value);
-                if (isNaN(val) || val < 3000) {
-                    e.target.value = 3000;
-                } else if (val > 6009401) {
-                    e.target.value = 6009401;
-                }
-            });
-
-            // O'yin maydonini shakllantirish (10 qator x 5 ustun = 50 ta katak)
-            for (let i = 0; i < 50; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                
-                // Bosilganda olmani chiqarish animatsiyasi
-                cell.addEventListener('click', function() {
-                    if (!this.querySelector('.apple')) {
-                        // O'yin mantig'iga qarab bu yerda butun olma 🍎 yoki yeyilgan olma qo'yishingiz mumkin
-                        this.innerHTML = '<span class="apple">🍎</span>';
-                    }
-                });
-                
-                grid.appendChild(cell);
-            }
-        });
-    </script>
 </body>
 </html>
