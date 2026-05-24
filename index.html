@@ -3,20 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Apple of Fortune - Premium Edition</title>
+    <title>RICHI28 - Apple of Fortune (Premium Hacker Edition)</title>
     <style>
-        /* Asosiy To'q Rangli Premium Dizayn */
+        /* Asosiy Premium Hacker Dizayn: Obsidian Black va Liquid Gold */
+        :root {
+            --obsidian-black: #050608;
+            --obsidian-light: #0d1015;
+            --obsidian-border: #1a1e26;
+            --liquid-gold: #e5b85c;
+            --liquid-gold-dark: #b38827;
+            --cyber-green: #10b981;
+            --danger-red: #ef4444;
+            --text-muted: #8a94a6;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace; /* Hacker style shrift */
         }
 
         body {
-            background-color: #0e1013;
+            background-color: var(--obsidian-black);
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -29,11 +40,28 @@
             width: 100%;
             max-width: 440px;
             height: 100vh;
-            background: radial-gradient(circle at top, #1a1f26 0%, #0d0f12 100%);
+            background: radial-gradient(circle at top, var(--obsidian-light) 0%, var(--obsidian-black) 100%);
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+        }
+
+        /* Glitch / Scanline Effekti */
+        .game-wrapper::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.3;
         }
 
         /* Yuqori Panel */
@@ -42,29 +70,33 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background-color: #16191e;
-            border-bottom: 1px solid #232830;
+            background-color: rgba(13, 16, 21, 0.9);
+            border-bottom: 1px solid var(--liquid-gold-dark);
             z-index: 10;
+            backdrop-filter: blur(10px);
         }
 
         .header .title {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #e2b34c;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--liquid-gold);
+            text-shadow: 0 0 10px rgba(229, 184, 92, 0.4);
+            font-family: 'Helvetica Neue', sans-serif;
         }
 
         .header .balance {
             font-size: 14px;
-            font-weight: 600;
-            color: #26ff71;
-            background: rgba(38, 255, 113, 0.1);
+            font-weight: 700;
+            color: var(--liquid-gold);
+            background: rgba(229, 184, 92, 0.1);
             padding: 5px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(38, 255, 113, 0.2);
+            border-radius: 4px;
+            border: 1px solid rgba(229, 184, 92, 0.3);
+            box-shadow: 0 0 15px rgba(229, 184, 92, 0.1);
         }
 
-        /* O'yin Maydoni (Viewport) */
+        /* O'yin Maydoni */
         .board-area {
             flex-grow: 1;
             position: relative;
@@ -72,13 +104,14 @@
             padding: 10px 15px;
             display: flex;
             align-items: flex-end;
+            z-index: 5;
         }
 
         .board {
             width: 100%;
             display: flex;
-            flex-direction: column-reverse; /* Qatorlar pastdan tepaga tartiblanadi */
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            flex-direction: column-reverse;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
             padding-bottom: 10px;
         }
 
@@ -89,42 +122,60 @@
             height: 54px;
             margin-bottom: 6px;
             opacity: 0.3;
-            transition: opacity 0.3s, background-color 0.3s;
-            border-radius: 8px;
+            transition: all 0.4s ease;
+            border-radius: 6px;
             padding: 2px;
+            position: relative;
+        }
+
+        .row::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0%;
+            height: 1px;
+            background: var(--liquid-gold);
+            transition: width 0.5s ease;
         }
 
         .row.active {
             opacity: 1;
-            background: linear-gradient(90deg, rgba(38, 255, 113, 0.08) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(229, 184, 92, 0.1) 0%, transparent 100%);
+        }
+
+        .row.active::after {
+            width: 100%;
+            box-shadow: 0 0 8px var(--liquid-gold);
         }
 
         .row.passed {
-            opacity: 0.7;
+            opacity: 0.6;
         }
 
-        /* Chap tomondagi Koeffitsiyentlar */
+        /* Koeffitsiyentlar */
         .multiplier {
             width: 55px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #8a94a6;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
             text-align: center;
             margin-right: 10px;
             flex-shrink: 0;
             padding: 6px 0;
-            border-radius: 6px;
-            background-color: #1c2026;
+            border-radius: 4px;
+            background-color: var(--obsidian-border);
             border: 1px solid #282e37;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Courier New', Courier, monospace;
         }
 
         .row.active .multiplier {
-            color: #000000;
-            background: #26ff71;
-            border-color: #26ff71;
-            box-shadow: 0 0 12px rgba(38, 255, 113, 0.4);
-            transform: scale(1.05);
+            color: var(--obsidian-black);
+            background: var(--liquid-gold);
+            border-color: var(--liquid-gold);
+            box-shadow: 0 0 15px rgba(229, 184, 92, 0.5);
+            transform: scale(1.1);
         }
 
         /* Kataklar Guruhi */
@@ -135,72 +186,94 @@
             gap: 6px;
         }
 
-        /* Yopiq Katak Dizayni (2-rasmdagi kabi zamonaviy tugmalar) */
+        /* Yopiq Katak */
         .cell {
             flex: 1;
             aspect-ratio: 1;
             position: relative;
             cursor: pointer;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #232933 0%, #16191f 100%);
-            border: 1px solid #2e3542;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 6px rgba(0,0,0,0.3);
+            border-radius: 6px;
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 6px rgba(0,0,0,0.4);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.2s, border-color 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+
+        .row.active .cell::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, var(--liquid-gold), transparent 30%);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .row.active .cell:hover::before {
+            opacity: 0.15;
         }
 
         .row.active .cell:hover {
-            border-color: #26ff71;
-            transform: translateY(-2px);
+            border-color: var(--liquid-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(229, 184, 92, 0.2);
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(1turn); }
         }
 
         .row:not(.active) .cell {
             pointer-events: none;
         }
 
-        /* Ochilgan Yutuqli va Yutqazilgan Kataklar */
+        /* Ochilgan Kataklar */
         .cell.opened-win {
-            background: radial-gradient(circle, #1a3c25 0%, #0f2115 100%);
-            border: 1px solid #26ff71;
-            box-shadow: 0 0 10px rgba(38, 255, 113, 0.2);
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, var(--obsidian-black) 100%);
+            border: 1px solid var(--cyber-green);
+            box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2), 0 0 10px rgba(16, 185, 129, 0.3);
         }
 
         .cell.opened-lose {
-            background: radial-gradient(circle, #421a1a 0%, #210f0f 100%);
-            border: 1px solid #ff3b30;
-            opacity: 0.4;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, var(--obsidian-black) 100%);
+            border: 1px solid var(--danger-red);
+            opacity: 0.5;
         }
 
         /* SVG Rasmlar */
         .apple-svg {
-            width: 65%;
-            height: 65%;
+            width: 60%;
+            height: 60%;
             display: none;
             z-index: 2;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
 
         .cell.opened-win .apple-svg.good,
         .cell.opened-lose .apple-svg.bad {
             display: block;
-            animation: popEffect 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: glitchPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes popEffect {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes glitchPop {
+            0% { transform: scale(0) skewX(20deg); opacity: 0; filter: hue-rotate(90deg); }
+            50% { transform: scale(1.2) skewX(-10deg); opacity: 0.8; filter: hue-rotate(-90deg); }
+            100% { transform: scale(1) skewX(0); opacity: 1; filter: hue-rotate(0); }
         }
 
-        /* Yuklanish Doirasi */
+        /* Yuklanish Doirasi (Matrix uslubida) */
         .loading-spinner {
             position: absolute;
-            width: 22px;
-            height: 22px;
-            border: 2.5px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #26ff71;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(229, 184, 92, 0.1);
+            border-top-color: var(--liquid-gold);
             border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+            animation: spin 0.6s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
             display: none;
             z-index: 3;
         }
@@ -209,40 +282,51 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Pastki Boshqaruv va Garov Paneli */
+        /* Pastki Panel */
         .bottom-panel {
-            background-color: #13161c;
-            border-top: 1px solid #232830;
-            padding: 15px 20px;
+            background-color: rgba(5, 6, 8, 0.95);
+            border-top: 1px solid var(--obsidian-border);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             z-index: 10;
+            position: relative;
         }
 
-        /* Garovni O'zgartirish Paneli */
+        .bottom-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--liquid-gold-dark), transparent);
+        }
+
+        /* Garov Paneli */
         .bet-control-container {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .bet-label-row {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: #8a94a6;
-            font-weight: 500;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .bet-input-wrapper {
             display: flex;
-            background-color: #1c2027;
-            border: 1px solid #2e3542;
-            border-radius: 8px;
+            background-color: var(--obsidian-light);
+            border: 1px solid var(--obsidian-border);
+            border-radius: 4px;
             overflow: hidden;
-            height: 44px;
+            height: 48px;
             align-items: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .bet-input {
@@ -250,96 +334,121 @@
             background: transparent;
             border: none;
             outline: none;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 700;
-            padding: 0 12px;
+            color: var(--liquid-gold);
+            font-size: 18px;
+            font-weight: 800;
+            padding: 0 15px;
             width: 100%;
+            text-shadow: 0 0 5px rgba(229, 184, 92, 0.2);
         }
 
         .bet-btn {
-            background-color: #282e38;
+            background-color: var(--obsidian-border);
             border: none;
-            color: #cbcfd6;
-            font-size: 11px;
-            font-weight: 700;
-            width: 44px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            width: 48px;
             height: 100%;
             cursor: pointer;
-            border-left: 1px solid #1c2027;
-            transition: background 0.2s;
-        }
-
-        .bet-btn:not(:last-child) {
-            border-right: 1px solid #1c2027;
+            border-left: 1px solid var(--obsidian-black);
+            transition: all 0.2s;
+            font-family: 'Helvetica Neue', sans-serif;
         }
 
         .bet-btn:hover {
-            background-color: #333b47;
-            color: #ffffff;
+            background-color: var(--liquid-gold-dark);
+            color: var(--obsidian-black);
         }
 
-        /* Dinamik Yutuq Indikatori */
+        /* Yutuq Indikatori */
         .winnings-status {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #18221c;
-            border: 1px dashed #26ff71;
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: none; /* Faqat o'yin boshlanganda chiqadi */
+            background-color: rgba(229, 184, 92, 0.05);
+            border: 1px dashed var(--liquid-gold);
+            padding: 12px 15px;
+            border-radius: 4px;
+            display: none;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(229, 184, 92, 0.4); }
+            50% { border-color: rgba(229, 184, 92, 1); box-shadow: inset 0 0 10px rgba(229, 184, 92, 0.1); }
+            100% { border-color: rgba(229, 184, 92, 0.4); }
         }
 
         .winnings-status span {
             font-size: 12px;
-            color: #a0c2af;
+            color: #d1d5db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .winnings-status .amount {
             font-size: 18px;
             font-weight: bold;
-            color: #26ff71;
+            color: var(--liquid-gold);
+            text-shadow: 0 0 8px rgba(229, 184, 92, 0.4);
         }
 
-        /* Asosiy Harakat Tugmasi */
+        /* Tugmalar */
         .action-button {
             width: 100%;
-            height: 50px;
+            height: 52px;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             font-size: 15px;
-            font-weight: 700;
-            color: #ffffff;
+            font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            font-family: 'Helvetica Neue', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .action-button:hover::after {
+            left: 100%;
         }
 
         .btn-place-bet {
-            background: linear-gradient(180deg, #34da6a 0%, #1a9e47 100%);
-            box-shadow: 0 4px 15px rgba(26, 158, 71, 0.3);
+            background: linear-gradient(180deg, var(--liquid-gold) 0%, var(--liquid-gold-dark) 100%);
+            color: var(--obsidian-black);
+            box-shadow: 0 5px 20px rgba(229, 184, 92, 0.3);
         }
 
         .btn-cashout {
-            background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%);
-            color: #000000;
-            box-shadow: 0 4px 15px rgba(204, 153, 0, 0.3);
+            background: linear-gradient(180deg, var(--cyber-green) 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
         }
 
         .btn-disabled {
-            background: #282e38 !important;
-            color: #646c7a !important;
+            background: var(--obsidian-border) !important;
+            color: #4b5563 !important;
             box-shadow: none !important;
             pointer-events: none;
+            border: 1px solid #374151;
         }
 
-        /* G'alaba Modali */
+        /* Modal */
         .overlay {
             position: absolute;
             inset: 0;
-            background: rgba(11, 13, 16, 0.9);
+            background: rgba(5, 6, 8, 0.95);
+            backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -356,53 +465,78 @@
         }
 
         .modal {
-            background: #1c2027;
-            border: 1px solid #34da6a;
-            border-radius: 16px;
-            padding: 30px;
+            background: var(--obsidian-light);
+            border: 1px solid var(--liquid-gold);
+            border-radius: 8px;
+            padding: 35px 30px;
             width: 85%;
             text-align: center;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-            transform: scale(0.8);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(229, 184, 92, 0.05);
+            transform: translateY(30px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
 
         .overlay.show .modal {
-            transform: scale(1);
+            transform: translateY(0) scale(1);
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: 50%; transform: translateX(-50%);
+            width: 50%; height: 2px;
+            background: var(--liquid-gold);
+            box-shadow: 0 0 15px var(--liquid-gold);
         }
 
         .modal-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #26ff71;
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(38, 255, 113, 0.3);
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--liquid-gold);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Helvetica Neue', sans-serif;
+            text-shadow: 0 0 15px rgba(229, 184, 92, 0.4);
         }
 
         .modal-desc {
-            font-size: 14px;
-            color: #8a94a6;
-            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .modal-amount {
-            font-size: 26px;
+            font-size: 32px;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
         .btn-restart {
-            background-color: #26ff71;
-            color: #000000;
-            padding: 12px 35px;
-            border: none;
-            border-radius: 8px;
+            background-color: var(--obsidian-border);
+            color: #ffffff;
+            padding: 15px 35px;
+            border: 1px solid var(--liquid-gold-dark);
+            border-radius: 4px;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             width: 100%;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        .btn-restart:hover {
+            background-color: var(--liquid-gold);
+            color: var(--obsidian-black);
+            box-shadow: 0 0 15px rgba(229, 184, 92, 0.4);
         }
     </style>
 </head>
@@ -412,7 +546,7 @@
         <symbol id="apple-good" viewBox="0 0 100 100">
             <circle cx="50" cy="55" r="38" fill="url(#gradGood)" />
             <path d="M50 18 Q55 5 68 8" fill="none" stroke="#5c3a21" stroke-width="5" stroke-linecap="round" />
-            <path d="M50 18 Q32 8 38 25 Q50 30 50 18 Z" fill="#26ff71" />
+            <path d="M50 18 Q32 8 38 25 Q50 30 50 18 Z" fill="#10b981" />
             <ellipse cx="34" cy="42" rx="4" ry="8" fill="rgba(255,255,255,0.4)" transform="rotate(-20 34 42)" />
             <defs>
                 <radialGradient id="gradGood" cx="35%" cy="35%" r="70%">
@@ -424,20 +558,26 @@
         </symbol>
 
         <symbol id="apple-bad" viewBox="0 0 100 100">
-            <path d="M50 18 C68 18 85 32 85 55 C85 78 68 92 50 92 C32 92 15 78 15 55 C15 32 32 18 50 18 Z" fill="#6b6b6b" opacity="0.2"/>
-            <path d="M32 88 Q50 96 68 88 C76 60 24 60 32 88 Z" fill="url(#gradGood)" />
-            <path d="M32 22 Q50 14 68 22 C76 40 24 40 32 22 Z" fill="url(#gradGood)" />
-            <rect x="46" y="32" width="8" height="36" fill="#d0be9b" rx="4" />
-            <circle cx="43" cy="50" r="3" fill="#2d1a10" />
-            <circle cx="57" cy="55" r="3" fill="#2d1a10" />
-            <path d="M50 18 Q55 5 68 8" fill="none" stroke="#5c3a21" stroke-width="5" stroke-linecap="round" />
+            <path d="M50 18 C68 18 85 32 85 55 C85 78 68 92 50 92 C32 92 15 78 15 55 C15 32 32 18 50 18 Z" fill="#6b6b6b" opacity="0.1"/>
+            <path d="M32 88 Q50 96 68 88 C76 60 24 60 32 88 Z" fill="url(#gradBad)" />
+            <path d="M32 22 Q50 14 68 22 C76 40 24 40 32 22 Z" fill="url(#gradBad)" />
+            <rect x="46" y="32" width="8" height="36" fill="#a39068" rx="4" />
+            <circle cx="43" cy="50" r="3" fill="#1a110a" />
+            <circle cx="57" cy="55" r="3" fill="#1a110a" />
+            <path d="M50 18 Q55 5 68 8" fill="none" stroke="#3d2514" stroke-width="5" stroke-linecap="round" />
+            <defs>
+                <radialGradient id="gradBad" cx="35%" cy="35%" r="70%">
+                    <stop offset="0%" stop-color="#692222" />
+                    <stop offset="100%" stop-color="#2a0d0d" />
+                </radialGradient>
+            </defs>
         </symbol>
     </svg>
 
     <div class="game-wrapper">
         <div class="header">
             <div class="title">APPLE OF FORTUNE</div>
-            <div class="balance">RICHI28 APP</div>
+            <div class="balance">RICHI28 SYS</div>
         </div>
 
         <div class="board-area">
@@ -446,7 +586,6 @@
         </div>
 
         <div class="bottom-panel">
-            
             <div class="bet-control-container" id="betControlBlock">
                 <div class="bet-label-row">
                     <span>Garov miqdori (UZS)</span>
@@ -466,21 +605,20 @@
                 <span class="amount" id="currentWinText">0 UZS</span>
             </div>
 
-            <button class="action-button btn-place-bet" id="actionBtn">Garov Tikish</button>
+            <button class="action-button btn-place-bet" id="actionBtn">Tizimni Ishga Tushirish</button>
         </div>
 
         <div class="overlay" id="resultOverlay">
             <div class="modal">
-                <div class="modal-title">G'ALABA!</div>
-                <div class="modal-desc">Sizning sof yutug'ingiz shakllandi:</div>
+                <div class="modal-title">G'ALABA</div>
+                <div class="modal-desc">Muvaffaqiyatli xakerlik hujumi yakunlandi</div>
                 <div class="modal-amount" id="modalAmountText">0 UZS</div>
-                <button class="btn-restart" id="restartBtn">Qayta O'ynash</button>
+                <button class="btn-restart" id="restartBtn">Yangi seansni boshlash</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Koeffitsiyentlar va tizim sozlamalari
         const configData = [
             { mult: 1.23, bads: 1 },
             { mult: 1.54, bads: 1 },
@@ -510,7 +648,6 @@
         const modalAmountText = document.getElementById('modalAmountText');
         const restartBtn = document.getElementById('restartBtn');
 
-        // Doskani dastlabki qurish
         function buildBoard() {
             board.innerHTML = '';
             board.style.transform = 'translateY(0)';
@@ -528,7 +665,6 @@
                 const cellsWrapper = document.createElement('div');
                 cellsWrapper.className = 'cells';
 
-                // Yomon olmalarning standart joylashuv matritsasi (oxirida fosh qilish uchun)
                 let cellLayout = ['good', 'good', 'good', 'good', 'good'];
                 let badPlaced = 0;
                 while(badPlaced < config.bads) {
@@ -568,7 +704,6 @@
             });
         }
 
-        // Garov miqdorini o'zgartirish mexanikasi
         function modifyBet(type) {
             if (isPlaying) return;
             
@@ -586,7 +721,6 @@
             betInput.value = formatNumber(currentBet);
         }
 
-        // Input maydoniga qo'lda yozilganda formatlash
         betInput.addEventListener('input', (e) => {
             let val = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
             let num = parseInt(val) || 0;
@@ -595,7 +729,6 @@
             e.target.value = formatNumber(num);
         });
 
-        // O'yinni faollashtirish
         function startMatch() {
             let parsedBet = parseInt(betInput.value.replace(/\s/g, '')) || 0;
             if(parsedBet < 10000) {
@@ -615,10 +748,9 @@
             refreshVisualRows();
 
             actionBtn.className = 'action-button btn-disabled';
-            actionBtn.textContent = 'YUTUQNI OLISH';
+            actionBtn.textContent = 'JARAYONDA...';
         }
 
-        // Qatorlarning vizual holatini boshqarish va skroll simulyatsiyasi
         function refreshVisualRows() {
             for (let i = 0; i < configData.length; i++) {
                 const targetRow = document.getElementById(`row-${i}`);
@@ -631,21 +763,33 @@
                 }
             }
 
-            // 4-qatordan yuqoriga ko'tarilganda doskani pastga siljitish (auto-center)
             if (currentRow > 3) {
                 const stepOffset = (currentRow - 3) * 60; 
                 board.style.transform = `translateY(${stepOffset}px)`;
             }
         }
 
-        // Katak bosilganda ishlaydigan asosiy 100% yutish mantiqi
+        // Hacker matn effekti (Decoding)
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentVal = Math.floor(progress * (end - start) + start);
+                obj.textContent = formatNumber(currentVal) + ' UZS';
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
         function onCellSelected(rIdx, cIdx, cellElement) {
             if (!isPlaying || lockClicks || rIdx !== currentRow) return;
 
             lockClicks = true;
 
-            // [100% YUTISH ALGORITMI]: Agar bosilgan katakda yomon olma bo'lsa, 
-            // uni darhol butun olmaga aylantiramiz va o'sha qatordagi boshqa katakka yomonlikni yuklaymiz.
+            // [100% YUTISH ALGORITMI]
             if(cellElement.dataset.matrixType === 'bad') {
                 cellElement.dataset.matrixType = 'good';
                 const siblingCells = document.getElementById(`row-${rIdx}`).querySelectorAll('.cell');
@@ -659,25 +803,24 @@
                 });
             }
 
-            // Yuklanish aylanasi effekti
             const spinner = cellElement.querySelector('.loading-spinner');
             spinner.style.display = 'block';
+            cellElement.style.borderColor = 'var(--liquid-gold)';
 
             setTimeout(() => {
                 spinner.style.display = 'none';
-                cellElement.classList.add('opened-win'); // Doimo g'alaba katagi ochiladi
+                cellElement.classList.add('opened-win');
 
-                // Yutuq summasini real vaqtda hisoblash
+                const previousPrize = currentRow === 0 ? 0 : Math.floor(currentBet * configData[currentRow - 1].mult);
                 const currentPrize = Math.floor(currentBet * configData[currentRow].mult);
-                currentWinText.textContent = formatNumber(currentPrize) + ' UZS';
+                
+                animateValue(currentWinText, previousPrize, currentPrize, 400);
 
-                // Yutuqni yechib olish tugmasini aktivlashtirish
                 actionBtn.className = 'action-button btn-cashout';
-                actionBtn.textContent = 'YUTUQNI OLISH';
+                actionBtn.textContent = 'YUTUQNI YECHISH';
 
                 if (currentRow === configData.length - 1) {
-                    // 10-qator tugaganda to'liq g'alaba
-                    setTimeout(() => completeMatch(currentPrize), 600);
+                    setTimeout(() => completeMatch(currentPrize), 800);
                 } else {
                     currentRow++;
                     lockClicks = false;
@@ -686,53 +829,51 @@
             }, 600);
         }
 
-        // Yutuq yechib olinganda yoki o'yin tugaganda doskani to'liq ochish
         function completeMatch(totalAmount) {
             isPlaying = false;
             
-            // Maydondagi ochilmagan qolgan barcha olmalarni fosh etish
             const maxOpenedRow = currentRow >= configData.length ? configData.length - 1 : currentRow;
             for (let i = 0; i <= maxOpenedRow; i++) {
                 const row = document.getElementById(`row-${i}`);
                 row.classList.add('active');
                 
                 const targets = row.querySelectorAll('.cell');
-                targets.forEach(c => {
+                targets.forEach((c, index) => {
                     if (!c.classList.contains('opened-win')) {
-                        if (c.dataset.matrixType === 'good') {
-                            c.classList.add('opened-win');
-                        } else {
-                            c.classList.add('opened-lose');
-                        }
+                        setTimeout(() => {
+                            if (c.dataset.matrixType === 'good') {
+                                c.classList.add('opened-win');
+                            } else {
+                                c.classList.add('opened-lose');
+                            }
+                        }, index * 100); // Kaskad animatsiyasi
                     }
                 });
             }
 
             setTimeout(() => {
-                modalAmountText.textContent = formatNumber(totalAmount) + ' UZS';
+                modalAmountText.textContent = '0 UZS';
                 resultOverlay.classList.add('show');
-            }, 900);
+                animateValue(modalAmountText, 0, totalAmount, 1000);
+            }, 1000);
         }
 
-        // Pastki asosiy tugma bosilishi
         actionBtn.addEventListener('click', () => {
             if (!isPlaying && currentRow === -1) {
                 startMatch();
             } else if (isPlaying && currentRow > 0 && !lockClicks) {
-                // Yutuqni yechib olish (Cashout)
                 const safePrize = Math.floor(currentBet * configData[currentRow - 1].mult);
                 completeMatch(safePrize);
             }
         });
 
-        // Qayta o'ynash tugmasi bosilganda reset qilish
         restartBtn.addEventListener('click', () => {
             resultOverlay.classList.remove('show');
             currentRow = -1;
             lockClicks = false;
             
             actionBtn.className = 'action-button btn-place-bet';
-            actionBtn.textContent = 'Garov Tikish';
+            actionBtn.textContent = 'Tizimni Ishga Tushirish';
             
             winningsDisplay.style.display = 'none';
             betControlBlock.style.display = 'flex';
@@ -740,12 +881,10 @@
             buildBoard();
         });
 
-        // Raqamlarni chiroyli formatlash (300000 -> 300 000)
         function formatNumber(val) {
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
 
-        // Ilk yuklanishda doskani sozlash
         buildBoard();
     </script>
 </body>
